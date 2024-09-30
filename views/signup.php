@@ -1,4 +1,11 @@
-<?php require_once "./components/header.php" ?>
+<?php require_once "./components/header.php" ;
+require_once './controllers/authController.php';
+
+$controller = new UserController();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->register();
+}
+?>
 <div class="container vh-100 d-flex justify-content-center align-items-center">
         <div class="col-md-4">
             <!-- Nav tabs -->
