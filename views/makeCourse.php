@@ -8,9 +8,7 @@ $errors = $controller->registerCourse(); // Get any errors if form is submitted
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="col-md-6">
-        <!-- Display Bootstrap Alerts for Errors -->
-        
-        <!-- Course Registration Form -->
+
         <form class="p-4 border rounded bg-light shadow-sm" method="POST">
             <h2 class="text-center text-primary">Register Course</h2>
             <?php if (!empty($errors)): ?>
@@ -63,10 +61,10 @@ $errors = $controller->registerCourse(); // Get any errors if form is submitted
         const coursePriceField = document.getElementById('coursePriceField');
         if (this.value === 'paid') {
             coursePriceField.classList.remove('d-none');
-            document.getElementById('coursePrice').setAttribute('required', 'required'); // Ensure price is required
+            document.getElementById('coursePrice').setAttribute('required', 'required');
         } else {
             coursePriceField.classList.add('d-none');
-            document.getElementById('coursePrice').removeAttribute('required'); // Remove required if free
+            document.getElementById('coursePrice').removeAttribute('required'); 
         }
     });
 </script>

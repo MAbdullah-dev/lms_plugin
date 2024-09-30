@@ -11,18 +11,18 @@ class MakeCourseController {
     }
 
     public function registerCourse() {
-        // Initialize an empty errors array
+
         $errors = [];
-        // print_r($_SESSION);
+
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Retrieve data from the form
-            $title = trim($_POST['courseTitle'] ?? ''); // Default to empty string if not set
-            $description = trim($_POST['courseDescription'] ?? ''); // Default to empty string if not set
-            $type = $_POST['courseType'] ?? ''; // Default to empty string if not set
-            $coursePaid = $_POST['coursePaid'] ?? ''; // Default to empty string if not set
-            $price = ($coursePaid === 'paid') ? ($_POST['coursePrice'] ?? 0) : 0; // Default price to 0 if course is free
-            $userId = $_SESSION['user']['id']; // Access the 'id' from the session array
+            $title = trim($_POST['courseTitle'] ?? ''); 
+            $description = trim($_POST['courseDescription'] ?? ''); 
+            $type = $_POST['courseType'] ?? ''; 
+            $coursePaid = $_POST['coursePaid'] ?? ''; 
+            $price = ($coursePaid === 'paid') ? ($_POST['coursePrice'] ?? 0) : 0; 
+            $userId = $_SESSION['user']['id']; 
             
             // Validation: Check required fields
             if (empty($title)) {
@@ -41,12 +41,12 @@ class MakeCourseController {
                 $errors[] = "Please enter a valid course price for paid courses.";
             }
 
-            // Validation: Check if course title is unique
+         
             if (!$this->model->isCourseTitleUnique($title)) {
                 $errors[] = "Course title already exists!";
             }
 
-            // If there are no errors, proceed to register the course
+   
             if (empty($errors)) {
                 if ($this->model->createCourse($userId, $title, $type, $price, $description)) {
                     header("Location: " . $_SERVER['HTTP_REFERER']);
@@ -57,8 +57,10 @@ class MakeCourseController {
             }
         }
 
-        // Return errors array to be used in the view
         return $errors;
+    }
+    public function getCourses() {
+        return $this->model->getAllCourses(); 
     }
 }
 

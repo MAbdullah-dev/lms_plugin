@@ -31,7 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="#">Home</a>
+                            <a class="btn btn-primary" href="courses.php">Home</a>
+                            <a class="btn btn-primary" href="makeCourse.php">createCourse</a>
+                            <a class="btn btn-primary" href="enrollment.php">Enrollment</a>
+                            <a class="btn btn-primary" href="view-classes-report.php">View Report</a>
+                            <a class="btn btn-light" href="login.php">login</a>
+                            <a class="btn btn-light" href="signup.php">signup</a>
                         </li>
                         <li class="nav-item">
                             <?php if (isset($_SESSION['user'])): ?> <!-- Check for logged-in user -->

@@ -37,4 +37,15 @@ class MakeCourseModel {
             die("Execute failed: " . $stmt->error);
         }
     }
+    public function getAllCourses() {
+        // Prepare SQL statement to get all courses with creator information
+        $stmt = $this->db->prepare("
+            SELECT c.id, c.title, c.description, c.price, u.name AS creator_name
+            FROM courses c
+            JOIN users u ON c.user_id = u.id
+        ");
+        
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC); // Fetch all courses as an associative array
+    }
 }
