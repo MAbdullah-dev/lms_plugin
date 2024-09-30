@@ -1,13 +1,14 @@
 <?php
 require_once './models/authModel.php';
 
-class UserController {
+class AuthController {
     private $user;
 
     public function __construct() {
         $this->user = new User();
     }
 
+    // Register logic
     public function register() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = trim($_POST['signupName']);
@@ -15,6 +16,7 @@ class UserController {
             $password = trim($_POST['signupPassword']);
             $confirmPassword = trim($_POST['signupConfirmPassword']);
 
+            // Validate inputs
             if (empty($name) || empty($email) || empty($password) || empty($confirmPassword)) {
                 echo "All fields are required!";
                 return;
@@ -25,11 +27,13 @@ class UserController {
                 return;
             }
 
+            // Check if email already exists
             if ($this->user->emailExists($email)) {
                 echo "Email already exists!";
                 return;
             }
 
+            // Attempt to register the user
             if ($this->user->register($name, $email, $password)) {
                 echo "User registered successfully!";
             } else {
@@ -37,4 +41,28 @@ class UserController {
             }
         }
     }
+
+    // Login logic
+    public function login() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = trim($_POST['loginEmail']);
+            $password = trim($_POST['loginPassword']);
+
+            // Validate inputs
+            if (empty($email) || empty($password)) {
+                echo "Email and password are required!";
+                return;
+            }
+
+            // Attempt to authenticate the user
+            if ($this->user->authenticate($email, $password)) {
+                echo "Login successful!";
+                // Redirect or set session here
+                // For example: $_SESSION['user'] = $userData;
+            } else {
+                echo "Invalid email or password!";
+            }
+        }
+    }
 }
+?>

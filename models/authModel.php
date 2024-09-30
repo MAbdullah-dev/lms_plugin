@@ -1,37 +1,48 @@
 <?php
-require_once './config/Db.php';
+require_once './config/dbHelper.php'; 
 
 class User {
     private $conn;
 
     public function __construct() {
-        $db = new Db();
-        $this->conn = $db->getConnection();
+        global $conn;
+        $this->conn = $conn;
     }
 
-    public function register($name, $email, $password) {
-
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-        $stmt = $this->conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-
-        $stmt->bind_param("sss", $name, $email, $hashedPassword);
-
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            return false;
-        }
-        $stmt->close();
-    }
-
+    // Check if email already exists
     public function emailExists($email) {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
+        $query = "SELECT * FROM users WHERE email = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParams("s", $email);
         $stmt->execute();
-        $stmt->store_result();
-        $emailExists = $stmt->num_rows > 0;
-        $stmt->close();
-        return $emailExists;
+        $result = $stmt->get_result();
+        return $result->num_rows > 0;
+    }
+
+    // Register new user
+    public function register($name, $email, $password) {
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $query = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParams("sss", $name, $email, $hashedPassword);
+        return $stmt->execute();
+    }
+
+    // Authenticate user during login
+    public function authenticate($email, $password) {
+        $query = "SELECT * FROM users WHERE email = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParams("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            if (password_verify($password, $user['password'])) {
+                return true;
+            }
+        }
+        return false;
     }
 }
+?>
