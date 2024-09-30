@@ -9,19 +9,19 @@ $errors = $controller->registerCourse(); // Get any errors if form is submitted
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="col-md-6">
         <!-- Display Bootstrap Alerts for Errors -->
-        <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    <?php foreach ($errors as $error): ?>
-                        <li><?php echo $error; ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
+        
         <!-- Course Registration Form -->
         <form class="p-4 border rounded bg-light shadow-sm" method="POST">
             <h2 class="text-center text-primary">Register Course</h2>
+            <?php if (!empty($errors)): ?>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        <?php foreach ($errors as $error): ?>
+                            <li><?php echo $error; ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <div class="mb-3">
                 <label for="courseTitle" class="form-label">Course Title</label>
                 <input type="text" class="form-control border-primary" id="courseTitle" name="courseTitle" placeholder="Enter course title">

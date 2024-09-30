@@ -53,7 +53,7 @@ class Auth {
         return false;
     }
 public function getUserInfo($email) {
-    $query = "SELECT name, role_id FROM users WHERE email = ?";
+    $query = "SELECT  id,name, role_id FROM users WHERE email = ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();

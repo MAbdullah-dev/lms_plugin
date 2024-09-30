@@ -13,6 +13,7 @@ class MakeCourseController {
     public function registerCourse() {
         // Initialize an empty errors array
         $errors = [];
+        // print_r($_SESSION);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Retrieve data from the form
@@ -21,8 +22,8 @@ class MakeCourseController {
             $type = $_POST['courseType'] ?? ''; // Default to empty string if not set
             $coursePaid = $_POST['coursePaid'] ?? ''; // Default to empty string if not set
             $price = ($coursePaid === 'paid') ? ($_POST['coursePrice'] ?? 0) : 0; // Default price to 0 if course is free
-            $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 2; // For testing
-
+            $userId = $_SESSION['user']['id']; // Access the 'id' from the session array
+            
             // Validation: Check required fields
             if (empty($title)) {
                 $errors[] = "Course title is required.";
