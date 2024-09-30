@@ -1,12 +1,12 @@
 <?php 
-session_start(); // Start the session at the very top
+session_start(); 
 
 require_once '../controllers/AuthController.php';
 
 $controller = new AuthController();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-    $controller->logout(); // Handle the logout action
+    $controller->logout(); 
 }
 ?>
 
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                             <a class="btn btn-light" href="signup.php">signup</a>
                         </li>
                         <li class="nav-item">
-                            <?php if (isset($_SESSION['user'])): ?> <!-- Check for logged-in user -->
+                            <?php if (isset($_SESSION['user'])): ?> 
                                 <form action="" method="POST" class="d-inline">
                                     <button type="submit" name="logout" class="btn btn-danger">Logout</button>
                                 </form>
