@@ -8,7 +8,6 @@
         </ul>
 </footer>
 <script src="../public/bootstrap/js/bootstrap.min.js"></script>
-<script src="../public/assets/js/header.js"></script>
 <script src="../public/assets/js/script.js"></script>
 
 </body>
