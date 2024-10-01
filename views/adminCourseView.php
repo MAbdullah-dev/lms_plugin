@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Course Title</th>
-                <th scope="col">Description</th>
                 <th scope="col">Created by</th>
                 <th scope="col">Price</th>
                 <th scope="col">Status</th>
@@ -39,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <tr>
                         <th scope="row"><?php echo $index + 1; ?></th>
                         <td><?php echo htmlspecialchars($course['title']); ?></td>
-                        <td><?php echo htmlspecialchars($course['description']); ?></td>
                         <td><?php echo htmlspecialchars($course['creator_name']); ?></td>
                         <td><?php echo ($course['price'] > 0) ? '$' . htmlspecialchars($course['price']) : 'Free'; ?></td>
                         <td>
@@ -50,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ?>
                         </td>
                         <td>
-                            <a href="#" class="btn btn-primary btn-sm">View</a>
+                            <a href="./viewCourse.php?id=<?php echo $course['id']; ?>" class="btn btn-primary btn-sm">View</a>
                             <?php if ($course['is_published'] == 0): // Only show buttons if course is pending ?>
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="course_id" value="<?php echo $course['id']; ?>">

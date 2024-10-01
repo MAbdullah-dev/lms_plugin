@@ -83,5 +83,8 @@ class MakeCourseController {
     public function rejectCourse($courseId) {
         return $this->model->updateCourseStatus($courseId, 3); // Reject course (set ispublished to 3)
     }
+    public function getCourseById($courseId) {
+        return $this->model->fetchCourseById($courseId);
+    }
 }
 
