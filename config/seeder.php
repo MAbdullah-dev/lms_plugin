@@ -81,13 +81,14 @@ class DatabaseSeeder {
                 `description` TEXT,
                 `link` VARCHAR(255) NOT NULL,
                 `capacity` INTEGER NOT NULL,
-                `visibility` BOOLEAN NOT NULL,
+                -- `visibility` BOOLEAN NOT NULL,
                 `user_id` INTEGER,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                `date` DATETIME,
+                `start_date` DATETIME,
                 `course_id` INTEGER,
                 FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+                FOREIGN KEY(`course_id`) REFERENCES `courses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
             )", 'classes');
         }
 
