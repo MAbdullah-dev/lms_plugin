@@ -82,5 +82,43 @@ class MakeCourseController {
     public function getCourseById($courseId) {
         return $this->model->fetchCourseById($courseId);
     }
+
+  public function enrollInCourse() {
+    if (isset($_POST['course_id']) && isset($_POST['user_id'])) {
+        $courseId = $_POST['course_id'];
+        $userId = $_POST['user_id'];
+
+        try {
+            $success = $this->model->enrollCourse($courseId, $userId);
+
+            if ($success) {
+                $_SESSION['message'] = "You have successfully enrolled in the course!";
+            } else {
+                $_SESSION['message'] = "Enrollment failed. Please try again.";
+            }
+        } catch (Exception $e) {
+            $_SESSION['message'] = "Error: " . $e->getMessage();
+        }
+    } else {
+        $_SESSION['message'] = "Invalid request. Missing course ID or user ID.";
+    }
+
+    header("Location: ./view_classes.php?id=" . $courseId);
+    exit();
+}
+
+public function getCoursesWithEnrollmentStatus() {
+    $courses = $this->getCourses(); 
+    $userId = $_SESSION['user']['id']; 
+
+    foreach ($courses as &$course) {
+        $course['is_enrolled'] = $this->model->isUserEnrolled($course['id'], $userId); 
+    }
+
+    return $courses;
+}
+
+
+
 }
 

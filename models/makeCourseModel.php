@@ -104,5 +104,33 @@ class MakeCourseModel {
         $result = $stmt->get_result();
         return ($result->num_rows > 0) ? $result->fetch_assoc() : null;
     }    
+
+   public function enrollCourse($courseId, $userId) {
+    $query = "INSERT INTO enrollments (course_id, user_id) VALUES (?, ?)";
+    $stmt = $this->db->prepare($query);
+
+    if (!$stmt) {
+        throw new Exception("Error preparing query: " . $this->db->error);
+    }
+
+    $stmt->bind_param("ii", $courseId, $userId);
+    if ($stmt->execute()) {
+        return $stmt->affected_rows > 0;
+    } else {
+        throw new Exception("Error executing query: " . $stmt->error);
+    }
+}
+
+public function isUserEnrolled($courseId, $userId) {
+    $query = "SELECT COUNT(*) as count FROM enrollments WHERE course_id = ? AND user_id = ?";
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param("ii", $courseId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+
+    return $result['count'] > 0;
+}
+
+
     
 }
