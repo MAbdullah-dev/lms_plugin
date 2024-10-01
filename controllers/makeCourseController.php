@@ -1,5 +1,4 @@
 <?php
-require_once "../config/database.php";
 require_once "../models/makeCourseModel.php";
 
 class MakeCourseController {
@@ -16,7 +15,6 @@ class MakeCourseController {
 
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Retrieve data from the form
             $title = trim($_POST['courseTitle'] ?? ''); 
             $description = trim($_POST['courseDescription'] ?? ''); 
             $type = $_POST['courseType'] ?? ''; 
@@ -24,7 +22,6 @@ class MakeCourseController {
             $price = ($coursePaid === 'paid') ? ($_POST['coursePrice'] ?? 0) : 0; 
             $userId = $_SESSION['user']['id']; 
             
-            // Validation: Check required fields
             if (empty($title)) {
                 $errors[] = "Course title is required.";
             }
@@ -60,16 +57,15 @@ class MakeCourseController {
         return $errors;
     }
        public function getCourses() {
-        // Get the logged-in user information from the session
-        $user = $_SESSION['user']; // This contains the 'id', 'name', and 'role_id'
+        $user = $_SESSION['user']; 
 
         // Fetch the courses based on the user's role
         return $this->model->getCourses($user);
     }
     public function getAllCoursesForAdmin() {
-        $user = $_SESSION['user']; // Get user details from session
+        $user = $_SESSION['user']; 
         
-        if ($user['role_id'] == 1) { // Only Admins can see all courses
+        if ($user['role_id'] == 1) { 
             return $this->model->getAllCourses();
         }
 
@@ -77,11 +73,11 @@ class MakeCourseController {
     }
 
     public function approveCourse($courseId) {
-        return $this->model->updateCourseStatus($courseId, 1); // Approve course (set ispublished to 1)
+        return $this->model->updateCourseStatus($courseId, 1); 
     }
 
     public function rejectCourse($courseId) {
-        return $this->model->updateCourseStatus($courseId, 3); // Reject course (set ispublished to 3)
+        return $this->model->updateCourseStatus($courseId, 3);
     }
 }
 

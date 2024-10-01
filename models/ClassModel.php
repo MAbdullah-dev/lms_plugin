@@ -36,5 +36,25 @@ class ClassModel {
             throw new Exception("Error inserting class: " . $stmt->error);
         }
     }
+
+    public function getClassesByCourse($courseId) {
+        $query = "SELECT * FROM classes WHERE course_id = ?";
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement: " . $this->conn->error);
+        }
+
+        DBHelper::bindParams($stmt, [
+            ['type' => 'i', 'value' => $courseId]
+        ]);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $classes = $result->fetch_all(MYSQLI_ASSOC);
+
+        return $classes;
+    }
 }
 ?>

@@ -40,5 +40,13 @@ class ClassController {
             }
         }
     }
+     public function getClassesForCourse($courseId) {
+        try {
+            $classes = $this->model->getClassesByCourse($courseId);
+            return $classes;
+        } catch (Exception $e) {
+            echo "Error fetching classes: " . $e->getMessage();
+        }
+    }
 }
 ?>

@@ -5,6 +5,14 @@ require_once "../controllers/ClassController.php";
 
 $classController = new ClassController();
 $classController->handleCreateClass();
+
+if (isset($_GET['id'])) {
+    $courseId = $_GET['id'];
+    $classes = $classController->getClassesForCourse($courseId);
+} else {
+    echo "Course ID not found.";
+}
+
 ?>
 
 
@@ -13,6 +21,38 @@ $classController->handleCreateClass();
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
     Create Class
 </button>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Class Title</th>
+                <th scope="col">Class Link</th>
+                <th scope="col">Class Description</th>
+                <th scope="col">Class Capacity</th>
+                <th scope="col">Class Date</th>
+                </tr>
+        </thead>
+        <tbody>
+            <?php
+            if (!empty($classes)) {
+                foreach ($classes as $class) {
+                    echo "<tr>";
+                    echo "<td>" . $class['id'] . "</td>";
+                    echo "<td>" . $class['title'] . "</td>";
+                    echo "<td><a href='" . $class['link'] . "'>" . $class['link'] . "</a></td>";
+                    echo "<td>" . $class['description'] . "</td>";
+                    echo "<td>" . $class['capacity'] . "</td>";
+                    echo "<td>" . $class['start_date'] . "</td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6'>No classes found.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
     </div>
 
 
