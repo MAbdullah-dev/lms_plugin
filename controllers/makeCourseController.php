@@ -59,8 +59,29 @@ class MakeCourseController {
 
         return $errors;
     }
-    public function getCourses() {
-        return $this->model->getAllCourses(); 
+       public function getCourses() {
+        // Get the logged-in user information from the session
+        $user = $_SESSION['user']; // This contains the 'id', 'name', and 'role_id'
+
+        // Fetch the courses based on the user's role
+        return $this->model->getCourses($user);
+    }
+    public function getAllCoursesForAdmin() {
+        $user = $_SESSION['user']; // Get user details from session
+        
+        if ($user['role_id'] == 1) { // Only Admins can see all courses
+            return $this->model->getAllCourses();
+        }
+
+        return [];
+    }
+
+    public function approveCourse($courseId) {
+        return $this->model->updateCourseStatus($courseId, 1); // Approve course (set ispublished to 1)
+    }
+
+    public function rejectCourse($courseId) {
+        return $this->model->updateCourseStatus($courseId, 3); // Reject course (set ispublished to 3)
     }
 }
 
