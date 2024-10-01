@@ -60,7 +60,7 @@ class AuthController {
             if ($this->user->authenticate($email, $password)) {
                 $userInfo = $this->user->getUserInfo($email); 
                 $_SESSION['user'] = $userInfo; 
-                $this->errors[] = "Login successful!";
+                header("Location: ../views/courses.php");
             } else {
                 $this->errors[] = "Invalid email or password!";
             }
@@ -70,7 +70,7 @@ class AuthController {
     public function logout() {
         session_unset(); 
         session_destroy();
-        header("Location: index.php"); // Redirect after logout
+        header ("Location : ../views/login.php"); 
         exit(); 
     }
 }

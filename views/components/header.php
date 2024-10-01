@@ -35,8 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                             <a class="btn btn-primary" href="makeCourse.php">createCourse</a>
                             <a class="btn btn-primary" href="enrollment.php">Enrollment</a>
                             <a class="btn btn-primary" href="view-classes-report.php">View Report</a>
-                            <a class="btn btn-light" href="login.php">login</a>
-                            <a class="btn btn-light" href="signup.php">signup</a>
+
                         </li>
                         <li class="nav-item">
                             <?php if (isset($_SESSION['user'])): ?> 
@@ -44,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                                     <button type="submit" name="logout" class="btn btn-danger">Logout</button>
                                 </form>
                             <?php else: ?>
+                                                            <a class="btn btn-light" href="login.php">login</a>
+                            <a class="btn btn-light" href="signup.php">signup</a>
                             <?php endif; ?>
                         </li>
                     </ul>
