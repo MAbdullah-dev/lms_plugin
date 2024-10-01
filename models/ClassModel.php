@@ -13,9 +13,9 @@ class ClassModel {
     public function createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $startDate) {
         $query = "INSERT INTO classes (course_id, user_id, title, description, link, capacity, start_date) 
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+
         $stmt = $this->conn->prepare($query);
-        
+
         if (!$stmt) {
             throw new Exception("Failed to prepare statement: " . $this->conn->error);
         }
@@ -51,10 +51,39 @@ class ClassModel {
 
         $stmt->execute();
         $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 
-        $classes = $result->fetch_all(MYSQLI_ASSOC);
+    public function createBooking($classId, $userId) {
+        $status = 'available'; // Initial status for now
+        $query = "INSERT INTO bookings (class_id, user_id, status) VALUES (?, ?, ?)";
 
-        return $classes;
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("iis", $classId, $userId, $status);
+        return $stmt->execute(); // Return success status
+    }
+    
+    public function isClassBookedByUser($classId, $userId) {
+        $query = "SELECT COUNT(*) as count FROM bookings WHERE class_id = ? AND user_id = ?";
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement: " . $this->conn->error);
+        }
+
+        DBHelper::bindParams($stmt, [
+            ['type' => 'i', 'value' => $classId],
+            ['type' => 'i', 'value' => $userId]
+        ]);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        return $row['count'] > 0; // Return true if class is already booked
     }
 }
-?>
