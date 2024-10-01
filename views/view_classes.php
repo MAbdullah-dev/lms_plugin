@@ -12,7 +12,6 @@ if (isset($_GET['id'])) {
 } else {
     echo "Course ID not found.";
 }
-
 ?>
 
 

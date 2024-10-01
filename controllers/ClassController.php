@@ -29,7 +29,7 @@ class ClassController {
 
                     $this->model->createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $startDate);
 
-                    header("Location: ../views/view_classes.php");
+                    header("Location: ../views/view_classes.php?id=" . $courseId);
                     exit();
 
                 } else {

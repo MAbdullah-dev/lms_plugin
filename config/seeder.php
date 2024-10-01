@@ -73,6 +73,20 @@ class DatabaseSeeder {
                 ('Admin User', 'admin@gmail.com', '" . password_hash('admin123', PASSWORD_DEFAULT) . "', 1)");
         }
 
+    // Create courses table if not exists
+        if (!$this->tableExists('courses')) {
+            $this->createTable("CREATE TABLE IF NOT EXISTS `courses` (
+                `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `user_id` INTEGER,
+                `title` VARCHAR(255) NOT NULL,
+                `type` ENUM('beginner', 'intermediate', 'advanced', 'expert') NOT NULL,
+                `price` DECIMAL(10,2) NOT NULL,
+                `description` LONGTEXT,
+                `is_published` BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+            )", 'courses');
+        }
+
         // Create classes table if not exists
         if (!$this->tableExists('classes')) {
             $this->createTable("CREATE TABLE IF NOT EXISTS `classes` (
@@ -87,7 +101,7 @@ class DatabaseSeeder {
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 `start_date` DATETIME,
                 `course_id` INTEGER,
-                FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+                FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
                 FOREIGN KEY(`course_id`) REFERENCES `courses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
             )", 'classes');
         }
@@ -142,19 +156,7 @@ class DatabaseSeeder {
             )", 'tutors');
         }
 
-        // Create courses table if not exists
-        if (!$this->tableExists('courses')) {
-            $this->createTable("CREATE TABLE IF NOT EXISTS `courses` (
-                `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `user_id` INTEGER,
-                `title` VARCHAR(255) NOT NULL,
-                `type` ENUM('beginner', 'intermediate', 'advanced', 'expert') NOT NULL,
-                `price` DECIMAL(10,2) NOT NULL,
-                `description` LONGTEXT,
-                `is_published` BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
-            )", 'courses');
-        }
+    
 
         // Create enrollments table if not exists
         if (!$this->tableExists('enrollments')) {
