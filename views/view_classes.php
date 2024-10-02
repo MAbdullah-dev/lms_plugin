@@ -1,6 +1,5 @@
 <?php
 require_once "./components/header.php";
-require_once "../auth.php";
 require_once "../controllers/ClassController.php";
 
 $classController = new ClassController();
@@ -16,11 +15,13 @@ if (isset($_GET['id'])) {
 
 <div class="container">
     <h1 class="text-center">View Classes</h1>
-  <?php if($_SESSION['user']['role_id'] === 2) : ?>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
-        Create Class
-    </button>
-<?php endif ?>
+
+    <!-- Check if the user is logged in and has the necessary role to create a class -->
+    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role_id'] === 2) : ?>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+            Create Class
+        </button>
+    <?php endif ?>
 
     <div>
         <table class="table">
@@ -32,9 +33,9 @@ if (isset($_GET['id'])) {
                     <th scope="col">Class Description</th>
                     <th scope="col">Class Capacity</th>
                     <th scope="col">Class Date</th>
-  <?php if($_SESSION['user']['role_id'] === 3) : ?>
-                    <th scope="col">Action</th>
-  <?php endif ?>
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role_id'] === 3) : ?>
+                        <th scope="col">Action</th>
+                    <?php endif ?>
                 </tr>
             </thead>
             <tbody>
@@ -49,13 +50,13 @@ if (isset($_GET['id'])) {
                         echo "<td>" . htmlspecialchars($class['capacity']) . "</td>";
                         echo "<td>" . htmlspecialchars($class['start_date']) . "</td>";
 
-   if($_SESSION['user']['role_id'] === 3) {
-                        if ($class['isBooked']) {
-                            echo "<td><button type='button' class='btn btn-secondary' disabled>Booked</button></td>";
-                        } else {
-                            echo "<td><button type='button' class='btn btn-success book-btn' data-bs-toggle='modal' data-bs-target='#bookClassModal' data-class-id='" . htmlspecialchars($class['id']) . "'>BOOK</button></td>";
+                        if (isset($_SESSION['user']) && $_SESSION['user']['role_id'] === 3) {
+                            if ($class['isBooked']) {
+                                echo "<td><button type='button' class='btn btn-secondary' disabled>Booked</button></td>";
+                            } else {
+                                echo "<td><button type='button' class='btn btn-success book-btn' data-bs-toggle='modal' data-bs-target='#bookClassModal' data-class-id='" . htmlspecialchars($class['id']) . "'>BOOK</button></td>";
+                            }
                         }
-                    }
                         echo "</tr>";
                     }
                 } else {
@@ -67,6 +68,7 @@ if (isset($_GET['id'])) {
     </div>
 </div>
 
+<!-- Modal for creating a class -->
 <div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -106,6 +108,7 @@ if (isset($_GET['id'])) {
     </div>
 </div>
 
+<!-- Modal for booking a class -->
 <div class="modal fade" id="bookClassModal" tabindex="-1" aria-labelledby="bookClassModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -116,7 +119,9 @@ if (isset($_GET['id'])) {
             <form method="POST" action="">
                 <div class="modal-body">
                     <input type="hidden" name="class_id" id="class_id">
-                    <input type="hidden" name="user_id" value="<?php echo $_SESSION['user']['id']; ?>">
+                    <?php if (isset($_SESSION['user'])): ?>
+                        <input type="hidden" name="user_id" value="<?php echo $_SESSION['user']['id']; ?>">
+                    <?php endif; ?>
                     <p>Are you sure you want to book this class?</p>
                 </div>
                 <div class="modal-footer">

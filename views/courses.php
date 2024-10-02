@@ -1,13 +1,12 @@
 <?php
 require_once "./components/header.php";
-require_once "../auth.php";
 require_once "../controllers/makeCourseController.php";
 
 $controller = new MakeCourseController();
 $courses = $controller->getCoursesWithEnrollmentStatus();
 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle course enrollment
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     $controller->enrollInCourse();
 }
 
@@ -31,37 +30,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </ul>
             </div>
 
-<div class="card-footer">
-    <?php if ($course['is_enrolled'] || in_array($_SESSION['user']['role_id'], [1, 2])): ?>
-        <a href="./view_classes.php?id=<?php echo $course['id']; ?>" class="btn btn-primary w-100">View Course</a>
-    <?php else: ?>
-        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#enrollModal-<?php echo $course['id']; ?>">Enroll</button>
+            <div class="card-footer">
+                <!-- Check if the user is logged in and has the necessary role -->
+                <?php if (isset($_SESSION['user']) && ($course['is_enrolled'] || in_array($_SESSION['user']['role_id'], [1, 2]))): ?>
+                    <a href="./view_classes.php?id=<?php echo $course['id']; ?>" class="btn btn-primary w-100">View Course</a>
+                <?php elseif (!isset($_SESSION['user'])): ?>
+                    <a href="./view_classes.php?id=<?php echo $course['id']; ?>" class="btn btn-secondary w-100">View Course (Public)</a>
+                <?php endif; ?>
 
-        <!-- Enrollment Modal -->
-        <div class="modal fade" id="enrollModal-<?php echo $course['id']; ?>" tabindex="-1" aria-labelledby="enrollModalLabel-<?php echo $course['id']; ?>" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="enrollModalLabel-<?php echo $course['id']; ?>">Confirm Enrollment</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Show the Enroll button only for logged-in users -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#enrollModal-<?php echo $course['id']; ?>">Enroll</button>
+                    
+                    <!-- Enrollment Modal -->
+                    <div class="modal fade" id="enrollModal-<?php echo $course['id']; ?>" tabindex="-1" aria-labelledby="enrollModalLabel-<?php echo $course['id']; ?>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="enrollModalLabel-<?php echo $course['id']; ?>">Confirm Enrollment</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to enroll in the course "<?php echo htmlspecialchars($course['title']); ?>"?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form action="" method="POST" class="d-inline">
+                                        <input type="hidden" name="course_id" value="<?php echo $course['id']; ?>">
+                                        <input type="hidden" name="user_id" value="<?php echo $_SESSION['user']['id']; ?>">
+                                        <button type="submit" name="enroll" class="btn btn-primary">Yes, Enroll</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        Are you sure you want to enroll in the course "<?php echo htmlspecialchars($course['title']); ?>"?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <form action="" method="POST" class="d-inline">
-                            <input type="hidden" name="course_id" value="<?php echo $course['id']; ?>">
-                            <input type="hidden" name="user_id" value="<?php echo $_SESSION['user']['id']; ?>">
-                            <button type="submit" name="enroll" class="btn btn-primary">Yes, Enroll</button>
-                        </form>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
-        </div>
-    <?php endif; ?>
-</div>
-
         </div>
     </div>
 <?php endforeach; ?>

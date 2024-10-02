@@ -14,44 +14,71 @@ class MakeCourseModel {
         
         return $stmt->num_rows === 0; 
     }
-    public function createCourse($userId, $title, $type, $price, $description) {
-        $stmt = $this->db->prepare("INSERT INTO courses (user_id, title, type, price, description, is_published) VALUES (?, ?, ?, ?, ?, ?)");
+    public function createCourse($userId, $title, $type, $price, $description, $visibility) {
+        $stmt = $this->db->prepare("INSERT INTO courses (user_id, title, type, price, description, is_published, visibility) VALUES (?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) {
             die("Prepare failed: " . $this->db->error);
         }
-
+    
         $isPublish = 0;
-
-        $stmt->bind_param("issssi", $userId, $title, $type, $price, $description, $isPublish);
-
+    
+        $stmt->bind_param("issssis", $userId, $title, $type, $price, $description, $isPublish, $visibility);
+    
         if ($stmt->execute()) {
             return true;
         } else {
             die("Execute failed: " . $stmt->error);
         }
     }
+    
     public function getCourses($user) {
-        $roleId = $user['role_id'];  
-        $userId = $user['id'];       
-        if ($roleId == 1) {
-            $query = "SELECT c.*, u.name AS creator_name FROM courses c JOIN users u ON c.user_id = u.id";
-        } elseif ($roleId == 2) {
-            $query = "SELECT c.*, u.name AS creator_name FROM courses c JOIN users u ON c.user_id = u.id WHERE c.user_id = ?";
-        } elseif ($roleId == 3) {
-            $query = "SELECT c.*, u.name AS creator_name FROM courses c JOIN users u ON c.user_id = u.id WHERE c.is_published = 1";
+        // Initialize roleId and userId from the user session
+        $roleId = $user['role_id'] ?? 0;  
+        $userId = $user['id'] ?? null; 
+    
+        // Prepare query based on user role
+        if ($roleId === 1) { // Admin
+            $query = "SELECT c.*, u.name AS creator_name 
+                      FROM courses c 
+                      JOIN users u ON c.user_id = u.id";
+        } elseif ($roleId === 2) { // Course creator
+            $query = "SELECT c.*, u.name AS creator_name 
+                      FROM courses c 
+                      JOIN users u ON c.user_id = u.id 
+                      WHERE c.user_id = ?";
+        } elseif ($roleId === 3) { // Regular user
+            $query = "SELECT c.*, u.name AS creator_name 
+                      FROM courses c 
+                      JOIN users u ON c.user_id = u.id 
+                      WHERE c.is_published = 1";
+        } else { // Guest (roleId == 0)
+            $query = "SELECT c.*, u.name AS creator_name 
+                      FROM courses c 
+                      JOIN users u ON c.user_id = u.id 
+                      WHERE c.is_published = 1 AND c.visibility = 'public'";
         }
+    
+        // Prepare statement
         $stmt = $this->db->prepare($query);
-        if ($roleId == 2) {
+        if ($roleId == 2 && $userId) {
+            // Bind userId if the user is a course creator
             $stmt->bind_param("i", $userId);
         }
+    
+        // Execute the query
         $stmt->execute();
         $result = $stmt->get_result();
+    
+        // Fetch the courses
         $courses = [];
         while ($course = $result->fetch_assoc()) {
             $courses[] = $course;
         }
-        return $courses;
+        
+        return $courses; // Return the list of courses
     }
+    
+    
     public function getAllCourses() {
         $query = "SELECT c.*, u.name AS creator_name FROM courses c JOIN users u ON c.user_id = u.id";
         $stmt = $this->db->prepare($query);

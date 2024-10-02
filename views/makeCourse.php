@@ -40,6 +40,14 @@ $errors = $controller->registerCourse();
                 </select>
             </div>
             <div class="mb-3">
+                <label for="visibility" class="form-label">Is the Course public or private?</label>
+                <select class="form-select border-primary" id="visibility" name="visibility" >
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="public">public</option>
+                    <option value="private">private</option>
+                </select>
+            </div>
+            <div class="mb-3">
                 <label for="coursePaid" class="form-label">Is the Course Paid?</label>
                 <select class="form-select border-primary" id="coursePaid" name="coursePaid" >
                     <option value="" disabled selected>Select an option</option>

@@ -10,16 +10,15 @@ class MakeCourseController {
     }
 
     public function registerCourse() {
-
         $errors = [];
-
-
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = trim($_POST['courseTitle'] ?? ''); 
             $description = trim($_POST['courseDescription'] ?? ''); 
             $type = $_POST['courseType'] ?? ''; 
             $coursePaid = $_POST['coursePaid'] ?? ''; 
             $price = ($coursePaid === 'paid') ? ($_POST['coursePrice'] ?? 0) : 0; 
+            $visibility = $_POST['visibility'] ?? 'private'; // default to private
             $userId = $_SESSION['user']['id']; 
             
             if (empty($title)) {
@@ -37,15 +36,13 @@ class MakeCourseController {
             if ($coursePaid === 'paid' && (empty($price) || $price <= 0)) {
                 $errors[] = "Please enter a valid course price for paid courses.";
             }
-
-         
+    
             if (!$this->model->isCourseTitleUnique($title)) {
                 $errors[] = "Course title already exists!";
             }
-
-   
+    
             if (empty($errors)) {
-                if ($this->model->createCourse($userId, $title, $type, $price, $description)) {
+                if ($this->model->createCourse($userId, $title, $type, $price, $description, $visibility)) {
                     header("Location: " . $_SERVER['HTTP_REFERER']);
                     exit;
                 } else {
@@ -53,11 +50,15 @@ class MakeCourseController {
                 }
             }
         }
-
+    
         return $errors;
     }
        public function getCourses() {
-        $user = $_SESSION['user']; 
+        if (isset($_SESSION['user'])) {
+        $user = $_SESSION['user'];
+        } else {
+            $user = null;
+        }
 
         return $this->model->getCourses($user);
     }
@@ -108,7 +109,12 @@ class MakeCourseController {
 
 public function getCoursesWithEnrollmentStatus() {
     $courses = $this->getCourses(); 
-    $userId = $_SESSION['user']['id']; 
+    if (isset($_SESSION['user'])) {
+        $userId = $_SESSION['user']['id']; 
+    }
+    else{
+        $userId = null;
+    }
 
     foreach ($courses as &$course) {
         $course['is_enrolled'] = $this->model->isUserEnrolled($course['id'], $userId); 
