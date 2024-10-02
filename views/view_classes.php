@@ -16,7 +16,6 @@ if (isset($_GET['id'])) {
 <div class="container">
     <h1 class="text-center">View Classes</h1>
 
-    <!-- Check if the user is logged in and has the necessary role to create a class -->
     <?php if (isset($_SESSION['user']) && $_SESSION['user']['role_id'] === 2) : ?>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
             Create Class
@@ -96,7 +95,7 @@ if (isset($_GET['id'])) {
                     </div>
                     <div class="mb-3">
                         <label for="startDate" class="form-label">Start Date</label>
-                        <input type="date" class="form-control" name="startDate" required>
+                        <input type="datetime-local" class="form-control" name="startDate" required>
                     </div>
                 </div>
                 <div class="modal-footer">

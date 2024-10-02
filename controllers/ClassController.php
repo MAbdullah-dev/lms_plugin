@@ -65,21 +65,17 @@ class ClassController {
 
     public function getClassesForCourse($courseId) {
         try {
-            // Fetch classes for the given course
             $classes = $this->model->getClassesByCourse($courseId);
     
-            // Check if the user is logged in
             if (isset($_SESSION['user'])) {
                 $userId = $_SESSION['user']['id'];
     
-                // Check if each class is booked by the logged-in user
                 foreach ($classes as &$class) {
                     $class['isBooked'] = $this->model->isClassBookedByUser($class['id'], $userId);
                 }
             } else {
-                // For guest users, set 'isBooked' to false for all classes
                 foreach ($classes as &$class) {
-                    $class['isBooked'] = false; // Guests cannot book classes
+                    $class['isBooked'] = false; 
                 }
             }
     

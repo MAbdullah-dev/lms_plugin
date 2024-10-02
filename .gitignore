@@ -1,0 +1,43 @@
+# Ignore vendor directory
+/vendor/
+
+# Ignore Composer files
+composer.lock
+composer.phar
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore IDE-specific files and directories
+/.idea/
+/*.sublime-project
+/*.sublime-workspace
+/.vscode/
+
+# Ignore cache directories
+/cache/
+/storage/*
+!.gitkeep
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+
+# Ignore coverage files
+/coverage/
+
+# Ignore test files
+/tests/*
+!tests/.gitkeep
+
+# Ignore build artifacts
+/build/

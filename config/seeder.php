@@ -69,9 +69,9 @@ class DatabaseSeeder {
                 `user_id` INTEGER,
                 `title` VARCHAR(255) NOT NULL,
                 `type` ENUM('beginner', 'intermediate', 'advanced', 'expert') NOT NULL,
-                `price` DECIMAL(10,2) NOT NULL,
                 `description` LONGTEXT,
-                `visibility` ENUM('private', 'public') NOT NULL,
+                `visibility` ENUM('Private', 'Public') NOT NULL,
+                `is_paid` ENUM('Free', 'Paid') NOT NULL,
                 `is_published` BOOLEAN DEFAULT FALSE,
                 FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
             )", 'courses');
@@ -80,12 +80,12 @@ class DatabaseSeeder {
         if (!$this->tableExists('classes')) {
             $this->createTable("CREATE TABLE IF NOT EXISTS `classes` (
                 `id` INTEGER AUTO_INCREMENT PRIMARY KEY,
+                `user_id` INTEGER,
                 `title` VARCHAR(100) NOT NULL,
                 `description` TEXT,
                 `link` VARCHAR(255) NOT NULL,
                 `capacity` INTEGER NOT NULL,
-                -- `visibility` BOOLEAN NOT NULL,
-                `user_id` INTEGER,
+                `price` DECIMAL(10,2) NOT NULL,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 `start_date` DATETIME,
@@ -100,7 +100,7 @@ class DatabaseSeeder {
                 `id` INTEGER AUTO_INCREMENT PRIMARY KEY,
                 `class_id` INTEGER NOT NULL,
                 `user_id` INTEGER NOT NULL,
-                `status` ENUM('confirmed', 'pending', 'canceled') DEFAULT 'confirmed',
+                `payment_status` ENUM('confirmed', 'pending', 'canceled') DEFAULT 'confirmed',
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 FOREIGN KEY(`class_id`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
