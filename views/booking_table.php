@@ -1,4 +1,7 @@
-<?php require_once "./components/header.php"; ?>
+<?php require_once "./components/header.php"; 
+require_once "../auth.php";
+
+?>
 
 <div class="container mt-4">
     <h2 class="text-center text-primary">Bookings</h2>

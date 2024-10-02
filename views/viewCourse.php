@@ -1,4 +1,5 @@
 <?php 
+require_once "../auth.php";
 require_once "./components/header.php"; 
 require_once "../controllers/makeCourseController.php"; 
 
@@ -12,8 +13,6 @@ if (isset($_GET['id'])) {
     // Fetch course details using the ID
     $course = $controller->getCourseById($courseId);
 } else {
-    // If no course ID is provided, redirect to courses page
-    header("Location: courses.php");
     exit;
 }
 

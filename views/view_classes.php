@@ -1,4 +1,5 @@
 <?php
+require_once "../auth.php";
 require_once "./components/header.php";
 require_once "../controllers/ClassController.php";
 
@@ -15,9 +16,12 @@ if (isset($_GET['id'])) {
 
 <div class="container">
     <h1 class="text-center">View Classes</h1>
+  <?php if($_SESSION['user']['role_id'] === 1 || $_SESSION['user']['role_id'] === 2) : ?>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
         Create Class
     </button>
+<?php endif ?>
+
     <div>
         <table class="table">
             <thead>
@@ -28,7 +32,9 @@ if (isset($_GET['id'])) {
                     <th scope="col">Class Description</th>
                     <th scope="col">Class Capacity</th>
                     <th scope="col">Class Date</th>
+  <?php if($_SESSION['user']['role_id'] === 3) : ?>
                     <th scope="col">Action</th>
+  <?php endif ?>
                 </tr>
             </thead>
             <tbody>
@@ -44,12 +50,13 @@ if (isset($_GET['id'])) {
                         echo "<td>" . htmlspecialchars($class['start_date']) . "</td>";
 
                         // Check if the class is already booked
+   if($_SESSION['user']['role_id'] === 3) {
                         if ($class['isBooked']) {
                             echo "<td><button type='button' class='btn btn-secondary' disabled>Booked</button></td>";
                         } else {
                             echo "<td><button type='button' class='btn btn-success book-btn' data-bs-toggle='modal' data-bs-target='#bookClassModal' data-class-id='" . htmlspecialchars($class['id']) . "'>BOOK</button></td>";
                         }
-
+                    }
                         echo "</tr>";
                     }
                 } else {
