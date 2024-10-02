@@ -1,5 +1,6 @@
 <?php require_once "./components/header.php" ?>
 
+
 <div class="container mt-4">
     <h2 class="text-center text-primary">Class Report</h2>
     <table class="table table-bordered table-striped">
