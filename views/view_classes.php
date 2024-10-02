@@ -16,7 +16,7 @@ if (isset($_GET['id'])) {
 
 <div class="container">
     <h1 class="text-center">View Classes</h1>
-  <?php if($_SESSION['user']['role_id'] === 1 || $_SESSION['user']['role_id'] === 2) : ?>
+  <?php if($_SESSION['user']['role_id'] === 2) : ?>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
         Create Class
     </button>
