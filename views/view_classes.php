@@ -49,7 +49,6 @@ if (isset($_GET['id'])) {
                         echo "<td>" . htmlspecialchars($class['capacity']) . "</td>";
                         echo "<td>" . htmlspecialchars($class['start_date']) . "</td>";
 
-                        // Check if the class is already booked
    if($_SESSION['user']['role_id'] === 3) {
                         if ($class['isBooked']) {
                             echo "<td><button type='button' class='btn btn-secondary' disabled>Booked</button></td>";

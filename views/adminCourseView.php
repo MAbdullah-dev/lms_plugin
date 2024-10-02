@@ -4,9 +4,8 @@ require_once "../auth.php";
 require_once "../controllers/makeCourseController.php"; 
 
 $controller = new MakeCourseController();
-$courses = $controller->getAllCoursesForAdmin(); // Fetch all courses for admin
+$courses = $controller->getAllCoursesForAdmin(); 
 
-// Handle course approval or rejection if a button is clicked
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['approve'])) {
         $controller->approveCourse($_POST['course_id']);
@@ -14,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $controller->rejectCourse($_POST['course_id']);
     }
 
-    // Refresh the page after action
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
@@ -50,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </td>
                         <td>
                             <a href="./viewCourse.php?id=<?php echo $course['id']; ?>" class="btn btn-primary btn-sm">View</a>
-                            <?php if ($course['is_published'] == 0): // Only show buttons if course is pending ?>
+                            <?php if ($course['is_published'] == 0):  ?>
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="course_id" value="<?php echo $course['id']; ?>">
                                     <button type="submit" name="approve" class="btn btn-success btn-sm">Approve</button>

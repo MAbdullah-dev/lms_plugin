@@ -3,14 +3,11 @@ require_once "./components/header.php";
 require_once "../auth.php";
 require_once "../controllers/makeCourseController.php"; 
 
-// Get course ID from the URL
 if (isset($_GET['id'])) {
     $courseId = $_GET['id'];
 
-    // Initialize controller
     $controller = new MakeCourseController();
 
-    // Fetch course details using the ID
     $course = $controller->getCourseById($courseId);
 } else {
     exit;

@@ -55,7 +55,7 @@ class ClassModel {
     }
 
     public function createBooking($classId, $userId) {
-        $status = 'available'; // Initial status for now
+        $status = 'available'; 
         $query = "INSERT INTO bookings (class_id, user_id, status) VALUES (?, ?, ?)";
 
         $stmt = $this->conn->prepare($query);
@@ -64,7 +64,7 @@ class ClassModel {
         }
 
         $stmt->bind_param("iis", $classId, $userId, $status);
-        return $stmt->execute(); // Return success status
+        return $stmt->execute();
     }
     
     public function isClassBookedByUser($classId, $userId) {
@@ -84,6 +84,6 @@ class ClassModel {
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
 
-        return $row['count'] > 0; // Return true if class is already booked
+        return $row['count'] > 0; 
     }
 }

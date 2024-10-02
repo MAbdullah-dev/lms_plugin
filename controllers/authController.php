@@ -6,7 +6,7 @@ require_once '../config/database.php';
 
 class AuthController {
     private $user;
-    public $errors = []; // Use class property for errors
+    public $errors = []; 
 
     public function __construct() {
         $db = new Db(); 
@@ -51,7 +51,6 @@ class AuthController {
             $email = trim($_POST['loginEmail']);
             $password = trim($_POST['loginPassword']);
 
-            // Validate inputs
             if (empty($email) || empty($password)) {
                 $this->errors[] = "Email and password are required!"; 
                 return;

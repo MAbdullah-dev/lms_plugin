@@ -4,7 +4,7 @@ require_once "../auth.php";
 require_once "../controllers/makeCourseController.php"; 
 
 $controller = new MakeCourseController();
-$errors = $controller->registerCourse(); // Get any errors if form is submitted
+$errors = $controller->registerCourse();
 ?>
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
@@ -57,7 +57,6 @@ $errors = $controller->registerCourse(); // Get any errors if form is submitted
 </div>
 
 <script>
-    // Show or hide course price field based on course payment type
     document.getElementById('coursePaid').addEventListener('change', function() {
         const coursePriceField = document.getElementById('coursePriceField');
         if (this.value === 'paid') {

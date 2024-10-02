@@ -59,7 +59,6 @@ class MakeCourseController {
        public function getCourses() {
         $user = $_SESSION['user']; 
 
-        // Fetch the courses based on the user's role
         return $this->model->getCourses($user);
     }
     public function getAllCoursesForAdmin() {

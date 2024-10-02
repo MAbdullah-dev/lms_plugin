@@ -9,7 +9,6 @@ class Auth {
         $this->conn = $dbConnection;
     }
 
-    // Check if email already exists
     public function emailExists($email) {
         $query = "SELECT * FROM users WHERE email = ?";
         $stmt = $this->conn->prepare($query);
@@ -21,7 +20,6 @@ class Auth {
         return $result->num_rows > 0;
     }
 
-    // Register new user
     public function register($name, $email, $password, $role_id) {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, 3)";
@@ -34,7 +32,6 @@ class Auth {
         return $stmt->execute();
     }
 
-    // Authenticate user during login
     public function authenticate($email, $password) {
         $query = "SELECT * FROM users WHERE email = ?";
         $stmt = $this->conn->prepare($query);
