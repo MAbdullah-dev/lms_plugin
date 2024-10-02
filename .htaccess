@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# Redirect root URL /lms to /lms/views/courses.php
+RewriteCond %{REQUEST_URI} ^/lms/?$ [NC]
+RewriteRule ^$ /lms/views/courses.php [L]

@@ -42,7 +42,7 @@ if ($course === null) {
                 </li>
             </ul>
             <div class="mt-3">
-                <a href="courses.php" class="btn btn-secondary">Back to Courses</a>
+                <a href="adminCourseView.php" class="btn btn-secondary">Back to Courses</a>
             </div>
         </div>
     </div>
