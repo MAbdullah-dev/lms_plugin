@@ -71,7 +71,6 @@ class DatabaseSeeder {
                 `type` ENUM('beginner', 'intermediate', 'advanced', 'expert') NOT NULL,
                 `price` DECIMAL(10,2) NOT NULL,
                 `description` LONGTEXT,
-                `visibility` BOOLEAN NOT NULL,
                 `is_published` BOOLEAN DEFAULT FALSE,
                 FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
             )", 'courses');
