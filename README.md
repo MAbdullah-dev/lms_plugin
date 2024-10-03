@@ -7,7 +7,7 @@
 <h2>1. Clone the Repository</h2>
 <p> Clone the repository into your local server (e.g., `htdocs` if using XAMPP). </p>
 
-```bash
+
 git clone https://github.com/MAbdullah-dev/lms_plugin.git
 
 
