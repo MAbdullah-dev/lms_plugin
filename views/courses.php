@@ -5,7 +5,6 @@ require_once "../controllers/makeCourseController.php";
 $controller = new MakeCourseController();
 $courses = $controller->getCoursesWithEnrollmentStatus();
 
-// Handle course enrollment
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     $controller->enrollInCourse();
 }
@@ -23,33 +22,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
                     <p class="card-text"><?php echo htmlspecialchars($course['description']); ?></p>
                     <ul class="list-group list-group-flush">
                         <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                            <li class="list-unstyled">Price: <?php echo ($course['price'] > 0) ? '$' . htmlspecialchars($course['price']) : 'Free'; ?></li>
-                            <li class="list-unstyled text-capitalize">Course Level: <?php echo htmlspecialchars($course['type']); ?></li>
+                            <li class="list-unstyled">
+    <?php echo ($course['is_paid'] === 'Paid') ? 'Classes: <b>Paid</b>' : 'Classes: <b>Free</b>'; ?>
+</li>
+
+                            <li class="list-unstyled text-capitalize">Course Level: <b> <?php echo htmlspecialchars($course['type']); ?> </b></li>
                         </div>
-                        <li class="list-unstyled mt-3 text-capitalize">Created by: <?php echo htmlspecialchars($course['creator_name']); ?></li>
+                        <li class="list-unstyled mt-3 text-capitalize">Created by: <b> <?php echo htmlspecialchars($course['creator_name']); ?></b></li>
                     </ul>
                 </div>
 
                 <div class="card-footer">
-                    <!-- Check if the user is logged in -->
                     <?php if (isset($_SESSION['user'])): ?>
-                        <!-- If the user is role_id 3 (student) -->
                         <?php if ($_SESSION['user']['role_id'] === 3): ?>
                             <?php if ($course['is_enrolled']): ?>
-                                <!-- Show View Course button if student is enrolled -->
                                 <a href="./view_classes.php?id=<?php echo $course['id']; ?>" class="btn btn-primary w-100">View Course</a>
                             <?php else: ?>
-                                <!-- Show Enroll button if student is not enrolled -->
                                 <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#enrollModal-<?php echo $course['id']; ?>">Enroll</button>
                             <?php endif; ?>
 
-                        <!-- If the user is role_id 1 (admin) or 2 (instructor), always show the View Course button -->
                         <?php elseif (in_array($_SESSION['user']['role_id'], [1, 2])): ?>
                             <a href="./view_classes.php?id=<?php echo $course['id']; ?>" class="btn btn-primary w-100">View Course</a>
 
                         <?php endif; ?>
 
-                    <!-- If the user is not logged in, show View Course button -->
                     <?php else: ?>
                         <a href="./view_classes.php?id=<?php echo $course['id']; ?>" class="btn btn-secondary w-100">View Course</a>
                     <?php endif; ?>
@@ -57,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
             </div>
         </div>
 
-        <!-- Enrollment Modal -->
         <div class="modal fade" id="enrollModal-<?php echo $course['id']; ?>" tabindex="-1" aria-labelledby="enrollModalLabel-<?php echo $course['id']; ?>" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

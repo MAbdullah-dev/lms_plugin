@@ -16,8 +16,8 @@ class MakeCourseController {
             $title = trim($_POST['courseTitle'] ?? ''); 
             $description = trim($_POST['courseDescription'] ?? ''); 
             $type = $_POST['courseType'] ?? ''; 
-            $coursePaid = $_POST['coursePaid'] ?? ''; 
-            $visibility = $_POST['visibility'] ?? 'private'; // default to private
+            $is_paid = $_POST['is_paid'] ?? ''; 
+            $visibility = $_POST['visibility'] ?? 'private'; 
             $userId = $_SESSION['user']['id']; 
             
             if (empty($title)) {
@@ -29,7 +29,7 @@ class MakeCourseController {
             if (empty($type)) {
                 $errors[] = "Course type is required.";
             }
-            if (empty($coursePaid)) {
+            if (empty($is_paid)) {
                 $errors[] = "Please select if the course is free or paid.";
             }
     
@@ -38,7 +38,7 @@ class MakeCourseController {
             }
     
             if (empty($errors)) {
-                if ($this->model->createCourse($userId, $title, $type, $coursePaid, $description, $visibility)) {
+                if ($this->model->createCourse($userId, $title, $type, $description, $visibility, $is_paid)) {
                     header("Location: " . $_SERVER['HTTP_REFERER']);
                     exit;
                 } else {

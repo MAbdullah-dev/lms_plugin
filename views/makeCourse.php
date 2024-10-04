@@ -5,6 +5,10 @@ require_once "../controllers/makeCourseController.php";
 
 $controller = new MakeCourseController();
 $errors = $controller->registerCourse();
+
+// if($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     var_dump($_POST);
+// }
 ?>
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
@@ -19,7 +23,7 @@ $errors = $controller->registerCourse();
                             <li><?php echo $error; ?></li>
                         <?php endforeach; ?>
                     </ul>
-                </div>
+                </div>  
             <?php endif; ?>
             <div class="mb-3">
                 <label for="courseTitle" class="form-label">Course Title</label>
@@ -48,8 +52,8 @@ $errors = $controller->registerCourse();
                 </select>
             </div>
             <div class="mb-3">
-                <label for="coursePaid" class="form-label">Is the Course Paid?</label>
-                <select class="form-select border-primary" id="coursePaid" name="coursePaid" >
+                <label for="is_paid" class="form-label">Is the Course Paid?</label>
+                <select class="form-select border-primary" id="is_paid" name="is_paid" >
                     <option value="" disabled selected>Select an option</option>
                     <option value="free">Free</option>
                     <option value="paid">Paid</option>
