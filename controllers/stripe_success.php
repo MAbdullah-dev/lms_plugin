@@ -21,7 +21,6 @@ if (isset($_GET['session_id']) && isset($_GET['course_id']) && isset($_GET['clas
         $classModel->createBookingWithPayment(
             $classId, 
             $userId, 
-            'paid', 
             $session->amount_total / 100, // Convert back to dollars
             $session->payment_intent
         );

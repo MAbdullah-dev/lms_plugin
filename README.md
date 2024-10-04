@@ -33,6 +33,12 @@ http://localhost/lms/config/seeder.php
 
 http://localhost/lms/views/login.php
 
+<h2> 4. Run this command for integrate strip and also write your stripe keys</h2>
+
+composer require stripe/stripe-php
+
+
+
 <h2> Need Help? </h2>
 <p> If you encounter any issues during setup, feel free to reach out via email: </p>
 <ul>

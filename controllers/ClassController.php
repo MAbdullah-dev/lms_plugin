@@ -70,7 +70,8 @@ class ClassController {
     
             // If it's a free class, proceed with booking
             if ($this->model->createBooking($classId, $userId)) {
-                header("Location: ../views/view_classes.php?id=" . htmlspecialchars($_GET['id']) . "&booking_success=1");
+                // header("Location: ../views/view_classes.php?id=" . htmlspecialchars($_GET['id']) . "&booking_success=1");
+
                 exit();
             } else {
                 throw new Exception("Error booking class.");
