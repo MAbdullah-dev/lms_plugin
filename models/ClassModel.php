@@ -48,23 +48,21 @@ class ClassModel {
         $stmt->execute();
         $result = $stmt->get_result();
 
-        // Ensure results are returned correctly
         if ($result->num_rows === 0) {
-            return []; // No classes found
+            return [];
         }
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function createBooking($classId, $userId) {
-        $status = 'available'; // You could use a constant for status values
-        $query = "INSERT INTO bookings (class_id, user_id, status) VALUES (?, ?, ?)";
+        $query = "INSERT INTO bookings (class_id, user_id) VALUES (?, ?)";
 
         $stmt = $this->conn->prepare($query);
         if (!$stmt) {
             throw new Exception("Failed to prepare statement: " . $this->conn->error);
         }
 
-        $stmt->bind_param("iis", $classId, $userId, $status);
+        $stmt->bind_param("ii", $classId, $userId);
         return $stmt->execute();
     }
 

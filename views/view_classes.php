@@ -3,7 +3,6 @@ require_once "./components/header.php";
 require_once "../controllers/ClassController.php";
 
 $classController = new ClassController();
-$classController->handleCreateClass();
 
 if (isset($_GET['id'])) {
     $courseId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -14,6 +13,19 @@ if (isset($_GET['id'])) {
     }
 } else {
     echo "Course ID not found.";
+}
+
+// Handle the form submission for class creation and booking
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check for the hidden input field for creating a class
+    if (isset($_POST['action']) && $_POST['action'] === 'create_class') {
+        $classController->handleCreateClass();
+    }
+
+    // Check for booking a free class
+    if (isset($_POST['action']) && $_POST['action'] === 'book_class') {
+        $classController->handleCreateClass(); // This will handle booking as well
+    }
 }
 ?>
 
@@ -116,8 +128,8 @@ if (isset($_GET['id'])) {
                         <input type="number" class="form-control" name="classCapacity" required>
                     </div>
                     <div class="mb-3" id="coursePriceField">
-                        <label for="classPrice" class="form-label">Course Price</label>
-                        <input type="number" class="form-control border-primary" id="classPrice" name="classPrice" placeholder="Enter course price" min="0" step="0.01">
+                        <label for="classPrice" class="form-label">Class Price</label>
+                        <input type="number" class="form-control border-primary" id="classPrice" name="classPrice" placeholder="Enter class price" min="0" step="0.01">
                     </div>
                     <div class="mb-3">
                         <label for="startDate" class="form-label">Start Date</label>
@@ -147,11 +159,12 @@ if (isset($_GET['id'])) {
                     <?php if (isset($_SESSION['user'])): ?>
                         <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($_SESSION['user']['id']); ?>">
                     <?php endif; ?>
+                    <input type="hidden" name="action" value="book_class">
                     <p>Are you sure you want to book this class?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" name="action" value="book_class">Book Class</button>
+                    <button type="submit" class="btn btn-success">Book Class</button>
                 </div>
             </form>
         </div>

@@ -55,21 +55,18 @@ class ClassController {
             $classId = intval($_POST['class_id']);
             $userId = intval($_POST['user_id']);
     
-            // Check if it's a paid class
             $class = $this->model->getClassById($classId);
             if (!$class) {
                 throw new Exception("Class not found.");
             }
 
             if ($class['price'] > 0) {
-                // Redirect to Stripe Checkout
                 header("Location: ../views/stripe_checkout.php?class_id={$classId}&user_id={$userId}");
                 exit();
             }
     
-            // If it's a free class, proceed with booking
             if ($this->model->createBooking($classId, $userId)) {
-                // header("Location: ../views/view_classes.php?id=" . htmlspecialchars($_GET['id']) . "&booking_success=1");
+                header("Location: ../views/view_classes.php?id=" . htmlspecialchars($_GET['id']) . "&booking_success=1");
 
                 exit();
             } else {
@@ -102,4 +99,4 @@ class ClassController {
             return [];
         }
     }
-}
+} 
