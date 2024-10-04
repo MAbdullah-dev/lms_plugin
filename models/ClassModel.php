@@ -87,18 +87,19 @@ class ClassModel {
         return $row['count'] > 0; 
     }
 
-    public function createBookingWithPayment($classId, $userId, $paymentStatus, $paymentAmount, $transactionId) {
-        $query = "INSERT INTO bookings (class_id, user_id, payment_status, payment_amount, transaction_id, created_at, updated_at) 
-                  VALUES (?, ?, ?, ?, ?, NOW(), NOW())";
+public function createBookingWithPayment($classId, $userId, $paymentAmount, $transactionId) {
+    $query = "INSERT INTO bookings (class_id, user_id, payment_amount, transaction_id, created_at, updated_at)
+              VALUES (?, ?, ?, ?, NOW(), NOW())";
 
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            throw new Exception("Failed to prepare statement: " . $this->conn->error);
-        }
-
-        $stmt->bind_param("iisss", $classId, $userId, $paymentStatus, $paymentAmount, $transactionId);
-        return $stmt->execute();
+    $stmt = $this->conn->prepare($query);
+    if (!$stmt) {
+        throw new Exception("Failed to prepare statement: " . $this->conn->error);
     }
+
+     $stmt->bind_param("iids", $classId, $userId, $paymentAmount, $transactionId);
+    return $stmt->execute();
+}
+
 
     public function getClassById($classId) {
         $query = "SELECT * FROM classes WHERE id = ?";

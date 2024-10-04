@@ -101,7 +101,7 @@ class DatabaseSeeder {
                 `class_id` INTEGER NOT NULL,
                 `user_id` INTEGER NOT NULL,
                 `payment_amount` DECIMAL(10,2) NOT NULL,
-                `transition_id` VARCHAR(255) NOT NULL,
+                `transaction_id` VARCHAR(255) NOT NULL,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 FOREIGN KEY(`class_id`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,

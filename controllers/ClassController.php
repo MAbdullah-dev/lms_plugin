@@ -17,7 +17,6 @@ class ClassController {
                     $this->bookClass();
                 }
             } catch (Exception $e) {
-                // Handle the error gracefully
                 header("Location: ../views/create_class.php?error=" . urlencode($e->getMessage()));
                 exit();
             }
@@ -40,7 +39,7 @@ class ClassController {
             $classLink = htmlspecialchars($_POST['classLink']);
             $classCapacity = intval($_POST['classCapacity']);
             $classPrice = floatval($_POST['classPrice']);
-            $startDate = $_POST['startDate']; // You might want to validate this as well
+            $startDate = $_POST['startDate']; 
 
             $this->model->createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $classPrice, $startDate);
 

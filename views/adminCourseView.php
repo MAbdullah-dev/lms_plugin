@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th scope="col">#</th>
                 <th scope="col">Course Title</th>
                 <th scope="col">Created by</th>
-                <th scope="col">Price</th>
+                <th scope="col">Classes Are:</th>
                 <th scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <th scope="row"><?php echo $index + 1; ?></th>
                         <td><?php echo htmlspecialchars($course['title']); ?></td>
                         <td><?php echo htmlspecialchars($course['creator_name']); ?></td>
-                        <td><?php echo ($course['price'] > 0) ? '$' . htmlspecialchars($course['price']) : 'Free'; ?></td>
+                        <td><?php echo ($course['is_paid']) ?></td>
                         <td>
                             <?php 
                                 if ($course['is_published'] == 0) echo 'Pending';
