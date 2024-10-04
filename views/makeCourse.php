@@ -55,26 +55,13 @@ $errors = $controller->registerCourse();
                     <option value="paid">Paid</option>
                 </select>
             </div>
-            <div class="mb-3 d-none" id="coursePriceField">
+            <!-- <div class="mb-3 d-none" id="coursePriceField">
                 <label for="coursePrice" class="form-label">Course Price</label>
                 <input type="number" class="form-control border-primary" id="coursePrice" name="coursePrice" placeholder="Enter course price" min="0" step="0.01">
-            </div>
+            </div> -->
             <button type="submit" class="btn btn-primary w-100">Register Course</button>
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById('coursePaid').addEventListener('change', function() {
-        const coursePriceField = document.getElementById('coursePriceField');
-        if (this.value === 'paid') {
-            coursePriceField.classList.remove('d-none');
-            document.getElementById('coursePrice').setAttribute('required', 'required');
-        } else {
-            coursePriceField.classList.add('d-none');
-            document.getElementById('coursePrice').removeAttribute('required'); 
-        }
-    });
-</script>
 
 <?php require_once "./components/footer.php"; ?>

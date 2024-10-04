@@ -14,20 +14,25 @@ class MakeCourseModel {
         
         return $stmt->num_rows === 0; 
     }
-    public function createCourse($userId, $title, $type, $price, $description, $visibility) {
-        $stmt = $this->db->prepare("INSERT INTO courses (user_id, title, type, price, description, is_published, visibility) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    public function createCourse($userId, $title, $type, $isPaid, $description, $visibility) {
+        // Set is_publish to 0 (false) by default
+        $isPublish = 0;  // Default to unpublished
+
+        // Prepare the statement
+        $stmt = $this->db->prepare("INSERT INTO courses (user_id, title, type, description, visibility, is_paid, is_published) 
+                                    VALUES (?, ?, ?, ?, ?, ?, ?)");
+    
         if (!$stmt) {
             die("Prepare failed: " . $this->db->error);
         }
     
-        $isPublish = 0;
-    
-        $stmt->bind_param("issssis", $userId, $title, $type, $price, $description, $isPublish, $visibility);
+        // Bind parameters (ensure that all types match the actual data)
+        $stmt->bind_param("issssii", $userId, $title, $type, $description, $visibility, $isPaid, $isPublish);
     
         if ($stmt->execute()) {
-            return true;
+            return true;  // Successfully inserted
         } else {
-            die("Execute failed: " . $stmt->error);
+            die("Execute failed: " . $stmt->error);  // Debugging output
         }
     }
     

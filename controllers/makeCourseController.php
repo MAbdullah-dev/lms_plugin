@@ -17,7 +17,6 @@ class MakeCourseController {
             $description = trim($_POST['courseDescription'] ?? ''); 
             $type = $_POST['courseType'] ?? ''; 
             $coursePaid = $_POST['coursePaid'] ?? ''; 
-            $price = ($coursePaid === 'paid') ? ($_POST['coursePrice'] ?? 0) : 0; 
             $visibility = $_POST['visibility'] ?? 'private'; // default to private
             $userId = $_SESSION['user']['id']; 
             
@@ -33,16 +32,13 @@ class MakeCourseController {
             if (empty($coursePaid)) {
                 $errors[] = "Please select if the course is free or paid.";
             }
-            if ($coursePaid === 'paid' && (empty($price) || $price <= 0)) {
-                $errors[] = "Please enter a valid course price for paid courses.";
-            }
     
             if (!$this->model->isCourseTitleUnique($title)) {
                 $errors[] = "Course title already exists!";
             }
     
             if (empty($errors)) {
-                if ($this->model->createCourse($userId, $title, $type, $price, $description, $visibility)) {
+                if ($this->model->createCourse($userId, $title, $type, $coursePaid, $description, $visibility)) {
                     header("Location: " . $_SERVER['HTTP_REFERER']);
                     exit;
                 } else {
