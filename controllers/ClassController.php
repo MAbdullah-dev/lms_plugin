@@ -9,37 +9,40 @@ class ClassController {
     }
 
     public function handleCreateClass() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['action'])) {
-                try {
-                    if ($_POST['action'] === 'create_class') {
-                        $this->createClass();
-                    } elseif ($_POST['action'] === 'book_class') {
-                        $this->bookClass();
-                    }
-                } catch (Exception $e) {
-                    echo "Error: " . $e->getMessage();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+            try {
+                if ($_POST['action'] === 'create_class') {
+                    $this->createClass();
+                } elseif ($_POST['action'] === 'book_class') {
+                    $this->bookClass();
                 }
+            } catch (Exception $e) {
+                // Handle the error gracefully
+                header("Location: ../views/create_class.php?error=" . urlencode($e->getMessage()));
+                exit();
             }
         }
     }
 
     private function createClass() {
         if (
-            isset($_GET['id']) && isset($_SESSION['user']['id']) &&
-            !empty($_POST['classTitle']) && !empty($_POST['classDescription']) &&
-            !empty($_POST['classLink']) && !empty($_POST['classCapacity']) &&
+            isset($_GET['id'], $_SESSION['user']['id']) &&
+            !empty($_POST['classTitle']) && 
+            !empty($_POST['classDescription']) &&
+            !empty($_POST['classLink']) && 
+            !empty($_POST['classCapacity']) &&
             !empty($_POST['startDate'])
         ) {
-            $courseId = $_GET['id'];
+            $courseId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
             $userId = $_SESSION['user']['id'];
-            $classTitle = $_POST['classTitle'];
-            $classDescription = $_POST['classDescription'];
-            $classLink = $_POST['classLink'];
+            $classTitle = htmlspecialchars($_POST['classTitle']);
+            $classDescription = htmlspecialchars($_POST['classDescription']);
+            $classLink = htmlspecialchars($_POST['classLink']);
             $classCapacity = intval($_POST['classCapacity']);
-            $startDate = $_POST['startDate'];
+            $classPrice = floatval($_POST['classPrice']);
+            $startDate = $_POST['startDate']; // You might want to validate this as well
 
-            $this->model->createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $startDate);
+            $this->model->createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $classPrice, $startDate);
 
             header("Location: ../views/view_classes.php?id=" . $courseId . "&success=1");
             exit();
@@ -50,10 +53,24 @@ class ClassController {
 
     private function bookClass() {
         if (!empty($_POST['class_id']) && !empty($_POST['user_id'])) {
-            $classId = $_POST['class_id'];
-            $userId = $_POST['user_id'];
+            $classId = intval($_POST['class_id']);
+            $userId = intval($_POST['user_id']);
+    
+            // Check if it's a paid class
+            $class = $this->model->getClassById($classId);
+            if (!$class) {
+                throw new Exception("Class not found.");
+            }
+
+            if ($class['price'] > 0) {
+                // Redirect to Stripe Checkout
+                header("Location: ../views/stripe_checkout.php?class_id={$classId}&user_id={$userId}");
+                exit();
+            }
+    
+            // If it's a free class, proceed with booking
             if ($this->model->createBooking($classId, $userId)) {
-                header("Location: ../views/view_classes.php?id=" . $_GET['id'] . "&booking_success=1");
+                header("Location: ../views/view_classes.php?id=" . htmlspecialchars($_GET['id']) . "&booking_success=1");
                 exit();
             } else {
                 throw new Exception("Error booking class.");
@@ -69,7 +86,6 @@ class ClassController {
     
             if (isset($_SESSION['user'])) {
                 $userId = $_SESSION['user']['id'];
-    
                 foreach ($classes as &$class) {
                     $class['isBooked'] = $this->model->isClassBookedByUser($class['id'], $userId);
                 }
@@ -86,5 +102,4 @@ class ClassController {
             return [];
         }
     }
-    
 }
