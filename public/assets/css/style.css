@@ -6,3 +6,9 @@ body {
 footer{
     margin-top: auto;
 }
+.microsoft-btn{
+    gap: 8px;
+}
+.microsoft-btn:active{
+    border: none;
+}
