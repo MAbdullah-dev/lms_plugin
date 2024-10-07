@@ -3,8 +3,10 @@ require_once '../vendor/autoload.php';
 require_once '../config/database.php';
 require_once '../models/ClassModel.php';
 
-// Set your Stripe secret API key
-\Stripe\Stripe::setApiKey('sk_test_51Q5YVN017k2WaYRklR3Knmz2rhmrv7yaAD6bDeaNm8wJTtU5Zg1Av3pUwB5wCDt0JQQn6PbNTJTC62Op3YEbcYRF00Hc5cgcuj');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
 
 if (isset($_GET['class_id']) && isset($_GET['user_id'])) {
     $classId = filter_input(INPUT_GET, 'class_id', FILTER_VALIDATE_INT);

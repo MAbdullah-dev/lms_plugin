@@ -20,17 +20,26 @@ class Auth {
         return $result->num_rows > 0;
     }
 
-    public function register($name, $email, $password, $role_id) {
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, 3)";
-        $stmt = $this->conn->prepare($query);
-        DBHelper::bindParams($stmt, [
-            ['type' => 's', 'value' => $name],
-            ['type' => 's', 'value' => $email],
-            ['type' => 's', 'value' => $hashedPassword]
-        ]);
-        return $stmt->execute();
+public function register($name, $email, $password) {
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, 3)";
+    $stmt = $this->conn->prepare($query);
+
+    if ($stmt === false) {
+        die('Error in SQL prepare: ' . $this->conn->error);
     }
+
+    $stmt->bind_param('sss', $name, $email, $hashedPassword);
+
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        die('Error in SQL execution: ' . $stmt->error);
+    }
+}
+
+
+
 
     public function authenticate($email, $password) {
         $query = "SELECT * FROM users WHERE email = ?";

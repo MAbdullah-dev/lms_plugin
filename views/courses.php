@@ -8,6 +8,7 @@ $courses = $controller->getCoursesWithEnrollmentStatus();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user'])) {
     $controller->enrollInCourse();
 }
+var_dump($_SESSION);
 
 ?>
 
