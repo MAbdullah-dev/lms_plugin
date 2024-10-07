@@ -1,6 +1,8 @@
 <?php
-require_once '../config/database.php';
-require_once '../config/dbHelper.php';
+    require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/dbHelper.php';
+
+
 
 class Auth {
     private $conn;
@@ -20,8 +22,12 @@ class Auth {
         return $result->num_rows > 0;
     }
 
-public function register($name, $email, $password) {
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+public function register($name, $email, $password = null) {
+    // Handle cases where password is not provided (OAuth users)
+    $hashedPassword = $password ? password_hash($password, PASSWORD_BCRYPT) : null;
+
+    // Prepare the query
     $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, 3)";
     $stmt = $this->conn->prepare($query);
 
@@ -29,6 +35,7 @@ public function register($name, $email, $password) {
         die('Error in SQL prepare: ' . $this->conn->error);
     }
 
+    // Bind parameters (for OAuth users, password will be null)
     $stmt->bind_param('sss', $name, $email, $hashedPassword);
 
     if ($stmt->execute()) {
@@ -37,6 +44,7 @@ public function register($name, $email, $password) {
         die('Error in SQL execution: ' . $stmt->error);
     }
 }
+
 
 
 
@@ -59,7 +67,7 @@ public function register($name, $email, $password) {
         return false;
     }
 public function getUserInfo($email) {
-    $query = "SELECT  id,name, role_id FROM users WHERE email = ?";
+    $query = "SELECT  id,name,email, role_id FROM users WHERE email = ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();

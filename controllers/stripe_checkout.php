@@ -3,10 +3,10 @@ require_once '../vendor/autoload.php';
 require_once '../config/database.php';
 require_once '../models/ClassModel.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); 
+        $dotenv->load();
 
-\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
+\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
 if (isset($_GET['class_id']) && isset($_GET['user_id'])) {
     $classId = filter_input(INPUT_GET, 'class_id', FILTER_VALIDATE_INT);

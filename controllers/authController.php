@@ -72,9 +72,10 @@ public function login() {
                 $userInfo = $this->user->getUserInfo($email);
 
                 $_SESSION['user'] = [
+                    'id' => $userInfo['id'],
                     'name' => $userInfo['name'],
                     'email' => $userInfo['email'],
-                    'role_id' => $userInfo['role_id'] // Store role_id in session
+                    'role_id' => $userInfo['role_id'] 
                 ];
 
                 header("Location: ../views/courses.php");
@@ -100,79 +101,7 @@ public function login() {
 
          return $provider->getAuthorizationUrl(['state' => $_SESSION['oauth2state']]);
     }
-
-public function azureCallback() {
-    session_start(); // Ensure the session is started
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-    $dotenv->load();
-
-    $provider = new GenericProvider([
-        'clientId'                => $_ENV['AZURE_CLIENT_ID'],
-        'clientSecret'            => $_ENV['AZURE_CLIENT_SECRET'],
-        'redirectUri'             => $_ENV['AZURE_REDIRECT_URI'],
-        'urlAuthorize'            => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/authorize',
-        'urlAccessToken'          => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/token',
-        'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
-        'scopes'                  => 'openid profile email User.Read'
-    ]);
-
-    if (!isset($_GET['code'])) {
-        header('Location: ../views/login.php');
-        exit;
-    }
-
-    if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-        unset($_SESSION['oauth2state']);
-        exit('Invalid state');
-    }
-
-    try {
-        $accessToken = $provider->getAccessToken('authorization_code', [
-            'code' => $_GET['code']
-        ]);
-
-        $resourceOwner = $provider->getResourceOwner($accessToken);
-        $user = $resourceOwner->toArray();
-        $email = $user['mail'] ?? $user['userPrincipalName'];
-        $name = $user['displayName'];
-
-        // Check if the user already exists in the database
-        if ($this->user->emailExists($email)) {
-            // Fetch the existing user's information
-            $userInfo = $this->user->getUserInfo($email);
-
-            // Store the existing user's information in the session
-            $_SESSION['user'] = [
-                'name' => $userInfo['name'],
-                'email' => $email,
-                'role_id' => $userInfo['role_id'] // Fetch role_id from the database
-            ];
-        } else {
-            // Register the user if they don't exist
-            $role_id = 3; // Set default role_id for newly registered users
-            $this->user->register($name, $email, null); // Register without password for OAuth users
-
-            // Store the new user information in the session
-            $_SESSION['user'] = [
-                'name' => $name,
-                'email' => $email,
-                'role_id' => $role_id // Set default role_id
-            ];
-        }
-
-        // Redirect to the courses page after successful login
-        header("Location: ../views/courses.php");
-        exit();
-    } catch (Exception $e) {
-        // Handle errors during authentication
-        exit('Error during authentication: ' . $e->getMessage());
-    }
-}
-
-
-
-
-
+    
     public function logout() {
         session_unset(); 
         session_destroy();
