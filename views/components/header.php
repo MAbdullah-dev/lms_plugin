@@ -57,8 +57,9 @@ $user = isset($_SESSION['user']) ? $_SESSION['user'] : null;
                                 </form>
                             <?php else: ?>
                                 <a class="btn btn-light" href="login.php">Login</a>
-                                <a class="btn btn-light" href="signup.php">Sign Up</a>
-                            <?php endif; ?>
+                                <a class="btn btn-light" href="signup.php">Sign Up as User</a>
+                                <a class="btn btn-light" href="signupTutor.php">Sign Up as Tutor</a>
+                                <?php endif; ?>
                         </li>
                     </ul>
                 </div>

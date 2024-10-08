@@ -10,10 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $errors = $controller->errors; 
 
 ?>
+<style>
+    .microsoft-btn{
+        margin: 0 auto;
+        border: 1px solid gainsboro;
+        padding: 12px 24px;
+    }
+</style>
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="col-md-4">
-        <div id="signup">
-            <form class="p-4 border rounded bg-light shadow-sm" method="POST" action="">
+        <div id="signup" class="border rounded bg-light shadow-sm">
+            <form class="p-4 " method="POST" action="">
                 <h2 class="text-center text-primary">Signup</h2>
                  <?php if(!empty($errors)) : ?>
                     <div class="alert alert-danger">
@@ -43,7 +50,12 @@ $errors = $controller->errors;
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Signup</button>
             </form>
+        
         </div>
+
+        <button class="bsk-btn btn mt-3 microsoft-btn d-flex align-items-center justify-content-center" type="submit" name="loginWithMicrosoft">
+        <object type="image/svg+xml" data="https://s3-eu-west-1.amazonaws.com/cdn-testing.web.bas.ac.uk/scratch/bas-style-kit/ms-pictogram/ms-pictogram.svg" class="me-2" style="width: 2rem; height: 2rem;"></object> 
+          Sign up with Microsoft</button>
     </div>
 </div>
 
