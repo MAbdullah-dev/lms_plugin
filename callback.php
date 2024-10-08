@@ -18,8 +18,8 @@ $provider = new GenericProvider([
     'clientId'                => $_ENV['AZURE_CLIENT_ID'],
     'clientSecret'            => $_ENV['AZURE_CLIENT_SECRET'],
     'redirectUri'             => $_ENV['AZURE_REDIRECT_URI'],
-    'urlAuthorize'            => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/authorize',
-    'urlAccessToken'          => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/token',
+   'urlAuthorize' => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+'urlAccessToken' => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
     'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
     'scopes'                  => 'openid profile email User.Read'
 ]);
@@ -36,7 +36,8 @@ if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
 
 try {
     $accessToken = $provider->getAccessToken('authorization_code', [
-        'code' => $_GET['code']
+        'code' => $_GET['code'],
+        'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'], 
     ]);
 
     $resourceOwner = $provider->getResourceOwner($accessToken);
@@ -48,6 +49,7 @@ try {
     if ($userModel->emailExists($email)) {
         $userInfo = $userModel->getUserInfo($email);
         $_SESSION['user'] = [
+            'id' => $userInfo['id'],
             'name' => $userInfo['name'],
             'email' => $userInfo['email'],
             'role_id' => $userInfo['role_id'] 

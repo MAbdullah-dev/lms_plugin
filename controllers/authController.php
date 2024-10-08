@@ -57,6 +57,7 @@ public function login() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['loginWithMicrosoft'])) {
             $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
+             $loginUrl = $this->getMicrosoftLoginUrl();
             header('Location: ' . $this->getMicrosoftLoginUrl());
             exit();
         } else {
@@ -89,14 +90,24 @@ public function login() {
 
 
     private function getMicrosoftLoginUrl() {
+        // $provider = new GenericProvider([
+        //     'clientId'                => $_ENV['AZURE_CLIENT_ID'],
+        //     'clientSecret'            => $_ENV['AZURE_CLIENT_SECRET'],
+        //     'redirectUri'             => $_ENV['AZURE_REDIRECT_URI'],
+        //     'urlAuthorize'            => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/authorize',
+        //     'urlAccessToken'          => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/token',
+        //     'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
+        //     'scopes'                  => 'openid profile email User.read'   
+        // ]);
+
         $provider = new GenericProvider([
             'clientId'                => $_ENV['AZURE_CLIENT_ID'],
             'clientSecret'            => $_ENV['AZURE_CLIENT_SECRET'],
             'redirectUri'             => $_ENV['AZURE_REDIRECT_URI'],
-            'urlAuthorize'            => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/authorize',
-            'urlAccessToken'          => 'https://login.microsoftonline.com/' . $_ENV['AZURE_TENANT_ID'] . '/oauth2/v2.0/token',
+            'urlAuthorize'            => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+            'urlAccessToken'          => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
             'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
-            'scopes'                  => 'openid profile email'
+            'scopes'                  => 'openid profile email User.read'
         ]);
 
          return $provider->getAuthorizationUrl(['state' => $_SESSION['oauth2state']]);
