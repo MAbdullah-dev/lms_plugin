@@ -2,6 +2,7 @@
     require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/dbHelper.php';
 
+use League\OAuth2\Client\Provider\GenericProvider;
 
 
 class Auth {
@@ -73,7 +74,7 @@ public function getUserInfo($email) {
     return $result->fetch_assoc(); 
 }
 public function getTutorDetails($userId) {
-    $query = "SELECT id, name, email, role_id FROM users WHERE id = ?";  // Use 'id' for filtering
+    $query = "SELECT is_verified FROM tutors WHERE user_id = ?";
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
@@ -89,15 +90,42 @@ public function registerTutor($userId, $bio) {
     return $stmt->execute();
 }
 
-// public function getUserIdByEmail($email) {
-//     $query = "SELECT id FROM users WHERE email = ?";
-//     $stmt = $this->conn->prepare($query);
-//     $stmt->bind_param("s", $email);
-//     $stmt->execute();
-//     $result = $stmt->get_result();
-//     $user = $result->fetch_assoc();
-//     return $user['id'];
-// }
+public function getEmailByMicrosoft() {
+    try {
+        $provider = new GenericProvider([
+            'clientId'                => $_ENV['AZURE_CLIENT_ID'],
+            'clientSecret'            => $_ENV['AZURE_CLIENT_SECRET'],
+            'redirectUri'             => $_ENV['AZURE_REDIRECT_URI'],
+            'urlAuthorize'            => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+            'urlAccessToken'          => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+            'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
+            'scopes'                  => 'openid profile email User.read'
+        ]);
+
+        if (!isset($_GET['code'])) {
+            throw new Exception('Authorization code not found');
+        }
+
+        $accessToken = $provider->getAccessToken('authorization_code', [
+            'code' => $_GET['code']
+        ]);
+
+        $microsoftUser = $provider->getResourceOwner($accessToken)->toArray();
+        
+        $email = $microsoftUser['mail'] ?? $microsoftUser['userPrincipalName'];
+        
+        if (!$email) {
+            throw new Exception('Unable to retrieve email from Microsoft account.');
+        }
+
+        return $email;
+
+    } catch (Exception $e) {
+        echo "Error fetching Microsoft account email: " . $e->getMessage();
+        return false; 
+    }
+}
+
 
 
 }

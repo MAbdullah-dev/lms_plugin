@@ -23,8 +23,6 @@ $provider = new GenericProvider([
     'scopes'                  => $_ENV['AZURE_SCOPES'],
 ]);
 
-// ... existing code ...
-
 if (!isset($_GET['code'])) {
     header('Location: views/login.php');
     exit;
@@ -49,44 +47,48 @@ try {
     exit();
 }
 
-$bio = isset($_SESSION['tutorBio']) ? trim($_SESSION['tutorBio']) : null; 
-$role_id = isset($_SESSION['role_id']) ? (int)$_SESSION['role_id'] : null;
-
-// Check if the user already exists
+// Check if the user already exists in the database
 $userInfo = $userModel->getUserInfo($email);
+
 if ($userInfo) {
-    // User exists, retrieve their role
+    // Existing user, check their role
     $role_id = $userInfo['role_id'];
     $userId = $userInfo['id'];
 
-    // Check if the user is a tutor and if they are verified
-    if ($role_id === 2) { // Tutor role
-        $tutorDetails = $userModel->getTutorDetails($userId); // Assume this method fetches tutor info
+    if ($role_id === 2) { // Tutor
+        $tutorDetails = $userModel->getTutorDetails($userId);  
         if ($tutorDetails && !$tutorDetails['is_verified']) {
-            // Redirect to under_review if the tutor is not verified
+            // Tutor is under review, redirect to the review page
             header('Location: views/under_review.php');
             exit();
         }
     }
 
-    // Set session for existing user
+    // User is either a normal user or a verified tutor, log them in
     $_SESSION['user'] = [
         'id' => $userId,
         'name' => $name,
         'email' => $email,
         'role_id' => $role_id
     ];
+    header('Location: views/courses.php');
+    exit();
+
 } else {
-    // New user registration
+    // User does not exist, proceed with registration
+
+    $role_id = $_SESSION['role_id'] ?? null;
+    $bio = isset($_SESSION['tutorBio']) ? trim($_SESSION['tutorBio']) : null;
+
     if ($role_id === 2 && $bio) {
+        // Register a tutor
         if ($userModel->register($name, $email, '', $role_id, $microsoft_acc = true)) {
             $userInfo = $userModel->getUserInfo($email);
             $userId = $userInfo['id'];
 
-            // Register tutor details
-            $is_verified = false; // New tutors are not verified by default
-            if ($userModel->registerTutor($userId, $bio, $is_verified)) {
-                // Redirect to under_review if the tutor is not verified
+            // Register the tutor's bio with verification set to false
+            if ($userModel->registerTutor($userId, $bio, $is_verified = false)) {
+                // Redirect to under_review.php
                 header('Location: views/under_review.php');
                 exit();
             } else {
@@ -98,16 +100,19 @@ if ($userInfo) {
             exit();
         }
     } elseif ($role_id === 3) {
-        // Role 3 (student or similar) can be handled here
-        if ($userModel->register($name, $email, '', $role_id, $microsoft_acc)) {
-            $userId = $userModel->getUserInfo($email);
+        // Register a normal user
+        if ($userModel->register($name, $email, '', $role_id, $microsoft_acc = true)) {
+            $userInfo = $userModel->getUserInfo($email);
 
             $_SESSION['user'] = [
-                'id' => $userId,
+                'id' => $userInfo['id'],
                 'name' => $name,
                 'email' => $email,
-                'role_id' => $role_id 
+                'role_id' => $role_id
             ];
+
+            header('Location: views/courses.php');
+            exit();
         } else {
             echo "Failed to register user.";
             exit();
@@ -117,7 +122,4 @@ if ($userInfo) {
         exit();
     }
 }
-
-// Redirect to the courses page if everything is successful
-header('Location: views/courses.php');
-exit();
+?>
