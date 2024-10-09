@@ -23,12 +23,12 @@ class Auth {
     }
 
 
-public function register($name, $email, $password = null) {
+public function register($name, $email, $password = null, $role_id) {
     // Handle cases where password is not provided (OAuth users)
     $hashedPassword = $password ? password_hash($password, PASSWORD_BCRYPT) : null;
 
     // Prepare the query
-    $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, 3)";
+    $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, ?)";
     $stmt = $this->conn->prepare($query);
 
     if ($stmt === false) {
@@ -36,7 +36,7 @@ public function register($name, $email, $password = null) {
     }
 
     // Bind parameters (for OAuth users, password will be null)
-    $stmt->bind_param('sss', $name, $email, $hashedPassword);
+    $stmt->bind_param('sssi', $name, $email, $hashedPassword, $role_id);
 
     if ($stmt->execute()) {
         return true;
@@ -75,6 +75,24 @@ public function getUserInfo($email) {
 
     return $result->fetch_assoc(); 
 }
+
+public function registerTutor($userId, $bio) {
+    $query = "INSERT INTO tutors (user_id, bio, is_verified) VALUES (?, ?, 0)";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("is", $userId, $bio);
+    return $stmt->execute();
+}
+
+// public function getUserIdByEmail($email) {
+//     $query = "SELECT id FROM users WHERE email = ?";
+//     $stmt = $this->conn->prepare($query);
+//     $stmt->bind_param("s", $email);
+//     $stmt->execute();
+//     $result = $stmt->get_result();
+//     $user = $result->fetch_assoc();
+//     return $user['id'];
+// }
+
 
 }
 ?>

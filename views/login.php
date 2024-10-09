@@ -37,7 +37,6 @@ $errors = $controller->errors;
             <button class="bsk-btn bsk-btn-default btn w-100 microsoft-btn d-flex align-items-center justify-content-center" type="submit" name="loginWithMicrosoft">
       <object type="image/svg+xml" data="https://s3-eu-west-1.amazonaws.com/cdn-testing.web.bas.ac.uk/scratch/bas-style-kit/ms-pictogram/ms-pictogram.svg" class="x-icon"></object> 
       Sign in with Microsoft</button>
-            <!-- <button type="submit" name="loginWithMicrosoft" class="btn btn-success w-100">Login with Microsoft   <i class="fa-brands fa-windows"></i></button> -->
         </form>
     </div>
 </div>

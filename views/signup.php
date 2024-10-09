@@ -48,14 +48,16 @@ $errors = $controller->errors;
                     <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
                     <input type="password" class="form-control border-primary" id="signupConfirmPassword" name="signupConfirmPassword" placeholder="Confirm your password">
                 </div>
+        <input type="hidden" name="role_id" value="3"> 
                 <button type="submit" class="btn btn-primary w-100">Signup</button>
+                    <button class="bsk-btn btn mt-3 microsoft-btn d-flex align-items-center justify-content-center" type="submit" name="signUpWithMicrosoft">
+        <object type="image/svg+xml" data="https://s3-eu-west-1.amazonaws.com/cdn-testing.web.bas.ac.uk/scratch/bas-style-kit/ms-pictogram/ms-pictogram.svg" class="me-2" style="width: 2rem; height: 2rem;"></object> 
+        Sign up with Microsoft</button>
             </form>
         
         </div>
 
-        <button class="bsk-btn btn mt-3 microsoft-btn d-flex align-items-center justify-content-center" type="submit" name="loginWithMicrosoft">
-        <object type="image/svg+xml" data="https://s3-eu-west-1.amazonaws.com/cdn-testing.web.bas.ac.uk/scratch/bas-style-kit/ms-pictogram/ms-pictogram.svg" class="me-2" style="width: 2rem; height: 2rem;"></object> 
-          Sign up with Microsoft</button>
+
     </div>
 </div>
 

@@ -136,8 +136,8 @@ class DatabaseSeeder {
             $this->createTable("CREATE TABLE IF NOT EXISTS `tutors` (
                 `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `user_id` INTEGER,
-                `phone` VARCHAR(15),
                 `bio` TEXT,
+                is_verified BOOLEAN DEFAULT false,
                 FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
             )", 'tutors');
         }
@@ -153,24 +153,6 @@ class DatabaseSeeder {
                 FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
                 FOREIGN KEY(`course_id`) REFERENCES `courses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
             )", 'enrollments');
-        }
-        // Insert tutors into users table if not exists
-        $tutors = [
-            ['name' => 'John Doe', 'email' => 'john@example.com', 'password' => 'password123', 'phone' => '123-456-7890', 'bio' => 'Experienced tutor in Mathematics.'],
-            ['name' => 'Jane Smith', 'email' => 'jane@example.com', 'password' => 'password123', 'phone' => '987-654-3210', 'bio' => 'Expert in Science and Chemistry.'],
-            ['name' => 'Emily Johnson', 'email' => 'emily@example.com', 'password' => 'password123', 'phone' => '555-555-5555', 'bio' => 'Specializes in Literature and Arts.']
-        ];
-        foreach ($tutors as $tutor) {
-            if (!$this->userExists($tutor['email'])) {
-                $this->insertData("INSERT INTO `users` (`name`, `email`, `password`, `role_id`) VALUES 
-                    ('" . $tutor['name'] . "', '" . $tutor['email'] . "', '" . password_hash($tutor['password'], PASSWORD_DEFAULT) . "', 2)");
-                
-                // Get the last inserted user ID
-                $userId = $this->conn->insert_id;
-                // Insert tutor details into tutors table
-                $this->insertData("INSERT INTO `tutors` (`user_id`, `phone`, `bio`) VALUES 
-                    ($userId, '" . $tutor['phone'] . "', '" . $tutor['bio'] . "')");
-            }
         }
     }
 }
