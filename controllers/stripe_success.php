@@ -2,6 +2,8 @@
 require_once '../vendor/autoload.php';
 require_once '../config/database.php';
 require_once '../models/ClassModel.php';
+require_once '../models/NotificationsModel.php';
+
 
  $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); 
         $dotenv->load();
@@ -27,6 +29,10 @@ if (isset($_GET['session_id']) && isset($_GET['course_id']) && isset($_GET['clas
             $session->amount_total / 100, // Convert back to dollars
             $session->payment_intent
         );
+
+            $notificationModel = new NotificationModel($db->getConnection());
+            $notificationModel->createNotification($userId, "Payment successful for class ID: $classId.");
+
 
         // Redirect to the class page with the correct course ID
         header("Location: ../views/view_classes.php?id=" . $courseId . "&payment_success=1");

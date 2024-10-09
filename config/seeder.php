@@ -111,15 +111,14 @@ class DatabaseSeeder {
         }
         // Create notifications table if not exists
         if (!$this->tableExists('notifications')) {
-            $this->createTable("CREATE TABLE IF NOT EXISTS `notifications` (
-                `id` INTEGER AUTO_INCREMENT PRIMARY KEY,
-                `user_id` INTEGER NOT NULL,
-                `class_id` INTEGER NOT NULL,
-                `message` TEXT NOT NULL,
-                `sent_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
-                FOREIGN KEY(`class_id`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
-            )", 'notifications');
+            $this->createTable("CREATE TABLE IF NOT EXISTS `notifications`(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read TINYINT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)", 'notifications');
         }
         // Create class_reports table if not exists
         if (!$this->tableExists('class_reports')) {
