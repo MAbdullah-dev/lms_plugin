@@ -67,13 +67,12 @@ if ($role_id === 2 && $bio) {
 
     // Register tutor in the 'users' table
     if ($userModel->register($name, $email, '', $role_id, $microsoft_acc = true)) {
-        $userId = $userModel->getUserInfo($email);
+        $userInfo = $userModel->getUserInfo($email); // Fetch user info
+        $userId = $userInfo['id']; // Extract the ID
 
-        // Add tutor details in the 'tutors' table
-        $is_verified = false; // Waiting for admin approval
+        $is_verified = false;
         if ($userModel->registerTutor($userId, $bio, $is_verified)) {
             echo "Tutor registration successful, pending verification!";
-            // Log the user in after successful registration
             $_SESSION['user'] = [
                 'id' => $userId,
                 'name' => $name,
@@ -92,8 +91,8 @@ if ($role_id === 2 && $bio) {
     // Clear session data after successful tutor registration
     unset($_SESSION['tutorBio']);
     unset($_SESSION['role_id']);
-
-} elseif ($role_id === 3) {
+}
+ elseif ($role_id === 3) {
     // Normal User Registration Flow (role_id = 3)
 
     // Check if email already exists

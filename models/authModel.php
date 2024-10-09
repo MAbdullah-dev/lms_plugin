@@ -36,7 +36,7 @@ public function register($name, $email, $password = null, $role_id, $microsoft_a
     $stmt->bind_param('sssii', $name, $email, $hashedPassword, $role_id, $microsoft_acc);
 
     if ($stmt->execute()) {
-        return true;
+        return $this->conn->insert_id;
     } else {
         die('Error in SQL execution: ' . $stmt->error);
     }
