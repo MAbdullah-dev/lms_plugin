@@ -40,6 +40,7 @@ $user = isset($_SESSION['user']) ? $_SESSION['user'] : null;
                                 <a class="btn btn-primary" href="courses.php">Home</a>
                                 <?php if ($user['role_id'] == 1): ?>
                                     <a class="btn btn-primary" href="adminCourseView.php">View Courses</a>
+                                    <a class="btn btn-primary" href="tutorVerification.php">Verify Tutor</a>
                                 <?php endif; ?>
                                 <?php if ($user['role_id'] == 2): ?>
                                     <a class="btn btn-primary" href="makeCourse.php">Create Course</a>
