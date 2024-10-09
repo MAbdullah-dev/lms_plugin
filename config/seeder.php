@@ -53,6 +53,7 @@ class DatabaseSeeder {
                 `email` VARCHAR(100) NOT NULL UNIQUE,
                 `password` VARCHAR(255) NULL,
                 `role_id` INTEGER NOT NULL,
+                `microsoft_acc` boolean default false,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )", 'users');
