@@ -72,6 +72,15 @@ public function getUserInfo($email) {
 
     return $result->fetch_assoc(); 
 }
+public function getTutorDetails($userId) {
+    $query = "SELECT id, name, email, role_id FROM users WHERE id = ?";  // Use 'id' for filtering
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc(); 
+}
+
 
 public function registerTutor($userId, $bio) {
     $query = "INSERT INTO tutors (user_id, bio, is_verified) VALUES (?, ?, 0)";

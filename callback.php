@@ -3,11 +3,10 @@ require_once 'vendor/autoload.php';
 require_once 'models/authModel.php';
 require_once 'config/database.php';
 
-session_start(); // Start the session
+session_start();
 
 use League\OAuth2\Client\Provider\GenericProvider;
 
-// Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
@@ -24,25 +23,23 @@ $provider = new GenericProvider([
     'scopes'                  => $_ENV['AZURE_SCOPES'],
 ]);
 
-// Step 1: Ensure 'code' is present
+// ... existing code ...
+
 if (!isset($_GET['code'])) {
-    header('Location: ../views/login.php');
+    header('Location: views/login.php');
     exit;
 }
 
-// Step 2: Validate state to protect against CSRF
 if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
     unset($_SESSION['oauth2state']);
     exit('Invalid state');
 }
 
 try {
-    // Step 3: Get access token
     $accessToken = $provider->getAccessToken('authorization_code', [
         'code' => $_GET['code']
     ]);
 
-    // Step 4: Fetch user details from Microsoft
     $microsoftUser = $provider->getResourceOwner($accessToken)->toArray();
     $email = $microsoftUser['mail'] ?? $microsoftUser['userPrincipalName'];
     $name = $microsoftUser['displayName'];
@@ -52,27 +49,59 @@ try {
     exit();
 }
 
-// Step 5: Check if session data for bio and role_id exists
-$bio = isset($_SESSION['tutorBio']) ? trim($_SESSION['tutorBio']) : null; // Ensure bio is properly set
+$bio = isset($_SESSION['tutorBio']) ? trim($_SESSION['tutorBio']) : null; 
 $role_id = isset($_SESSION['role_id']) ? (int)$_SESSION['role_id'] : null;
 
-if ($role_id === 2 && $bio) {
-    // Tutor Registration Flow (role_id = 2)
+// Check if the user already exists
+$userInfo = $userModel->getUserInfo($email);
+if ($userInfo) {
+    // User exists, retrieve their role
+    $role_id = $userInfo['role_id'];
+    $userId = $userInfo['id'];
 
-    // Check if the email already exists
-    if ($userModel->emailExists($email)) {
-        echo "Email already exists!";
-        exit();
+    // Check if the user is a tutor and if they are verified
+    if ($role_id === 2) { // Tutor role
+        $tutorDetails = $userModel->getTutorDetails($userId); // Assume this method fetches tutor info
+        if ($tutorDetails && !$tutorDetails['is_verified']) {
+            // Redirect to under_review if the tutor is not verified
+            header('Location: views/under_review.php');
+            exit();
+        }
     }
 
-    // Register tutor in the 'users' table
-    if ($userModel->register($name, $email, '', $role_id, $microsoft_acc = true)) {
-        $userInfo = $userModel->getUserInfo($email); // Fetch user info
-        $userId = $userInfo['id']; // Extract the ID
+    // Set session for existing user
+    $_SESSION['user'] = [
+        'id' => $userId,
+        'name' => $name,
+        'email' => $email,
+        'role_id' => $role_id
+    ];
+} else {
+    // New user registration
+    if ($role_id === 2 && $bio) {
+        if ($userModel->register($name, $email, '', $role_id, $microsoft_acc = true)) {
+            $userInfo = $userModel->getUserInfo($email);
+            $userId = $userInfo['id'];
 
-        $is_verified = false;
-        if ($userModel->registerTutor($userId, $bio, $is_verified)) {
-            echo "Tutor registration successful, pending verification!";
+            // Register tutor details
+            $is_verified = false; // New tutors are not verified by default
+            if ($userModel->registerTutor($userId, $bio, $is_verified)) {
+                // Redirect to under_review if the tutor is not verified
+                header('Location: views/under_review.php');
+                exit();
+            } else {
+                echo "Failed to register tutor details!";
+                exit();
+            }
+        } else {
+            echo "Failed to register user.";
+            exit();
+        }
+    } elseif ($role_id === 3) {
+        // Role 3 (student or similar) can be handled here
+        if ($userModel->register($name, $email, '', $role_id, $microsoft_acc)) {
+            $userId = $userModel->getUserInfo($email);
+
             $_SESSION['user'] = [
                 'id' => $userId,
                 'name' => $name,
@@ -80,51 +109,15 @@ if ($role_id === 2 && $bio) {
                 'role_id' => $role_id 
             ];
         } else {
-            echo "Failed to register tutor details!";
+            echo "Failed to register user.";
             exit();
         }
     } else {
-        echo "Failed to register user.";
+        echo "Invalid role or missing session data.";
         exit();
     }
-
-    // Clear session data after successful tutor registration
-    unset($_SESSION['tutorBio']);
-    unset($_SESSION['role_id']);
-}
- elseif ($role_id === 3) {
-    // Normal User Registration Flow (role_id = 3)
-
-    // Check if email already exists
-    if ($userModel->emailExists($email)) {
-        echo "Email already exists!";
-        exit();
-    }
-
-    // Register normal user in the 'users' table
-    if ($userModel->register($name, $email, '', $role_id, $microsoft_acc)) {
-        // Log the user in after successful registration
-        $userId = $userModel->getUserInfo($email);
-
-        $_SESSION['user'] = [
-            'id' => $userId,
-            'name' => $name,
-            'email' => $email,
-            'role_id' => $role_id 
-        ];
-        echo "User registration successful!";
-    } else {
-        echo "Failed to register user.";
-        exit();
-    }
-
-} else {
-    // Invalid or missing role_id scenario
-    echo "Invalid role or missing session data.";
-    exit();
 }
 
-// Redirect after successful registration
+// Redirect to the courses page if everything is successful
 header('Location: views/courses.php');
 exit();
-?>

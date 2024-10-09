@@ -26,7 +26,7 @@ class AuthController {
             if (isset($_POST['signUpTutorWithMicrosoft'])) {
                 $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
                 $bio = trim($_POST['tutorBio']);
-                $role_id = 2; // Tutor role ID
+                $role_id = 2; 
 
                 if (empty($bio)) {
                     $this->errors[] = "Bio is required!";
@@ -38,10 +38,9 @@ class AuthController {
 
                 header('Location: ' . $this->getMicrosoftLoginUrl());
                 exit();
-            } else { // Normal registration flow (for normal users)
                 if (isset($_POST['signUpWithMicrosoft'])) {
                     $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
-                    $role_id = 3; // Normal user role ID
+                    $role_id = 3;
                     $_SESSION['role_id'] = $role_id;
                     header('Location: ' . $this->getMicrosoftLoginUrl());
                     exit();
@@ -51,7 +50,7 @@ class AuthController {
                 $email = trim($_POST['signupEmail']);
                 $password = trim($_POST['signupPassword']);
                 $confirmPassword = trim($_POST['signupConfirmPassword']);
-                $role_id = 3; // Normal user role ID
+                $role_id = 3; 
 
                 if (empty($name) || empty($email) || empty($password) || empty($confirmPassword)) {
                     $this->errors[] = "All fields are required!";
