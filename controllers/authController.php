@@ -68,7 +68,7 @@ class AuthController {
                     return;
                 }
 
-                if ($this->user->register($name, $email, $password, $role_id)) {
+                if ($this->user->register($name, $email, $password, $role_id, $microsoft_acc = false)) {
                     $this->errors[] = "Registration successful!";
                 } else {
                     $this->errors[] = "Failed to register user.";

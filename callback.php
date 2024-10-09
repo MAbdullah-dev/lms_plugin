@@ -66,7 +66,7 @@ if ($role_id === 2 && $bio) {
     }
 
     // Register tutor in the 'users' table
-    if ($userModel->register($name, $email, '', $role_id)) {
+    if ($userModel->register($name, $email, '', $role_id, $microsoft_acc = true)) {
         $userId = $userModel->getUserInfo($email);
 
         // Add tutor details in the 'tutors' table
@@ -103,7 +103,7 @@ if ($role_id === 2 && $bio) {
     }
 
     // Register normal user in the 'users' table
-    if ($userModel->register($name, $email, '', $role_id)) {
+    if ($userModel->register($name, $email, '', $role_id, $microsoft_acc)) {
         // Log the user in after successful registration
         $userId = $userModel->getUserInfo($email);
 

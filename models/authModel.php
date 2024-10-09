@@ -23,20 +23,17 @@ class Auth {
     }
 
 
-public function register($name, $email, $password = null, $role_id) {
-    // Handle cases where password is not provided (OAuth users)
+public function register($name, $email, $password = null, $role_id, $microsoft_acc) {
     $hashedPassword = $password ? password_hash($password, PASSWORD_BCRYPT) : null;
-
-    // Prepare the query
-    $query = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, ?)";
+    
+    
+    $query = "INSERT INTO users (name, email, password, role_id, microsoft_acc) VALUES (?, ?, ?, ?, ?)";
     $stmt = $this->conn->prepare($query);
 
     if ($stmt === false) {
         die('Error in SQL prepare: ' . $this->conn->error);
     }
-
-    // Bind parameters (for OAuth users, password will be null)
-    $stmt->bind_param('sssi', $name, $email, $hashedPassword, $role_id);
+    $stmt->bind_param('sssii', $name, $email, $hashedPassword, $role_id, $microsoft_acc);
 
     if ($stmt->execute()) {
         return true;
