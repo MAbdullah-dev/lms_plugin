@@ -127,7 +127,7 @@ public function register() {
             'urlAuthorize'            => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
             'urlAccessToken'          => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
             'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
-            'scopes'                  => 'openid profile email User.read'
+            'scopes'                  => $_ENV['AZURE_SCOPES']
         ]);
 
         return $provider->getAuthorizationUrl(['state' => $_SESSION['oauth2state']]);
