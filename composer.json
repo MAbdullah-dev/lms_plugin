@@ -3,6 +3,13 @@
         "stripe/stripe-php": "^16.1",
         "paypal/rest-api-sdk-php": "^1.14",
         "league/oauth2-client": "^2.7",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "microsoft/microsoft-graph": "^2.16"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        }
     }
 }

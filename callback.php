@@ -38,6 +38,9 @@ try {
         'code' => $_GET['code']
     ]);
 
+    // Store access token in the session
+    $_SESSION['access_token'] = $accessToken->getToken();
+
     $microsoftUser = $provider->getResourceOwner($accessToken)->toArray();
     $email = $microsoftUser['mail'] ?? $microsoftUser['userPrincipalName'];
     $name = $microsoftUser['displayName'];
@@ -69,7 +72,7 @@ if ($userInfo) {
         'id' => $userId,
         'name' => $name,
         'email' => $email,
-        'role_id' => $role_id
+        'role_id' => $role_id,
     ];
     header('Location: views/courses.php');
     exit();
@@ -108,7 +111,7 @@ if ($userInfo) {
                 'id' => $userInfo['id'],
                 'name' => $name,
                 'email' => $email,
-                'role_id' => $role_id
+                'role_id' => $role_id,
             ];
 
             header('Location: views/courses.php');
@@ -122,4 +125,3 @@ if ($userInfo) {
         exit();
     }
 }
-?>
