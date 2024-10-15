@@ -1,89 +1,106 @@
 <?php
-require_once '../vendor/autoload.php';
-require_once '../models/authModel.php';
-require_once '../config/database.php';
 
 use League\OAuth2\Client\Provider\GenericProvider;
-
-class AuthController {
-    private $user;
-    public $errors = []; 
-
-    public function __construct() {
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); 
-        $dotenv->load();
-
-        if (empty($_ENV['AZURE_CLIENT_ID']) || empty($_ENV['AZURE_CLIENT_SECRET']) || empty($_ENV['AZURE_REDIRECT_URI']) || empty($_ENV['AZURE_TENANT_ID'])) {
-            die("Environment variables are not set correctly.");
-        }
-
-        $db = new Db(); 
-        $this->user = new Auth($db->getConnection()); 
-    }
-
-public function register() {
-   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['signUpTutorWithMicrosoft'])) {
-            $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
-            $bio = trim($_POST['tutorBio']);
-            $role_id = 2; 
-
-            if (empty($bio)) {
-                $this->errors[] = "Bio is required!";
-                return;
-            }
-
-            $email = $this->user->getEmailByMicrosoft(); 
-            if ($this->user->emailExists($email)) {
-                $this->errors[] = "An account with this email already exists!";
-                return;
-            }
-
-            $_SESSION['tutorBio'] = $bio;
-            $_SESSION['role_id'] = $role_id;
-
-            header('Location: ' . $this->getMicrosoftLoginUrl());
-            exit();
-        }
-
-        if (isset($_POST['signUpWithMicrosoft'])) {
-            $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
-            $role_id = 3;
-            $_SESSION['role_id'] = $role_id;
-            header('Location: ' . $this->getMicrosoftLoginUrl());
-            exit();
-        }
-
-        // Regular signup logic
-        $name = trim($_POST['signupName']);
-        $email = trim($_POST['signupEmail']);
-        $password = trim($_POST['signupPassword']);
-        $confirmPassword = trim($_POST['signupConfirmPassword']);
-        $role_id = 3; 
-
-        if (empty($name) || empty($email) || empty($password) || empty($confirmPassword)) {
-            $this->errors[] = "All fields are required!";
-            return;
-        }
-
-        if ($password !== $confirmPassword) {
-            $this->errors[] = "Passwords do not match!";
-            return;
-        }
-
-        if ($this->user->emailExists($email)) {
-            $this->errors[] = "Email already exists!";
-            return;
-        }
-
-        if ($this->user->register($name, $email, $password, $role_id, false)) {
-            $this->errors[] = "Registration successful!";
+function safeRequire($filePath) {
+    if (file_exists($filePath)) {
+        require_once $filePath;
+    } else {
+        $fallbackPath = str_replace('../', '', $filePath);
+        if (file_exists($fallbackPath)) {
+            require_once $fallbackPath;
         } else {
-            $this->errors[] = "Failed to register user.";
+            throw new Exception("Required file not found: " . $filePath);
         }
     }
 }
 
+try {
+    safeRequire('../vendor/autoload.php');
+    safeRequire('../models/authModel.php');
+    safeRequire('../config/database.php');
+    safeRequire('../config/OAuthProviderService.php');  
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
+}   
+
+
+class AuthController {
+    private $user;
+    private $oauthProviderService;
+    public $errors = [];
+
+    public function __construct() {
+        $db = new Db(); 
+        $this->user = new Auth($db->getConnection()); 
+        $this->oauthProviderService = new OAuthProviderService();
+    }
+
+
+ public function getProvider() {
+        return $this->oauthProviderService->getProvider(); 
+    }
+    public function register() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['signUpTutorWithMicrosoft'])) {
+                $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
+                $bio = trim($_POST['tutorBio']);
+                $role_id = 2; 
+
+                if (empty($bio)) {
+                    $this->errors[] = "Bio is required!";
+                    return;
+                }
+
+                $email = $this->user->getEmailByMicrosoft(); 
+                if ($this->user->emailExists($email)) {
+                    $this->errors[] = "An account with this email already exists!";
+                    return;
+                }
+
+                $_SESSION['tutorBio'] = $bio;
+                $_SESSION['role_id'] = $role_id;
+
+                header('Location: ' . $this->getMicrosoftLoginUrl());
+                exit();
+            }
+
+            if (isset($_POST['signUpWithMicrosoft'])) {
+                $_SESSION['oauth2state'] = bin2hex(random_bytes(16));
+                $role_id = 3; 
+                $_SESSION['role_id'] = $role_id;
+                header('Location: ' . $this->getMicrosoftLoginUrl());
+                exit();
+            }
+
+            $name = trim($_POST['signupName']);
+            $email = trim($_POST['signupEmail']);
+            $password = trim($_POST['signupPassword']);
+            $confirmPassword = trim($_POST['signupConfirmPassword']);
+            $role_id = 3; 
+
+            if (empty($name) || empty($email) || empty($password) || empty($confirmPassword)) {
+                $this->errors[] = "All fields are required!";
+                return;
+            }
+
+            if ($password !== $confirmPassword) {
+                $this->errors[] = "Passwords do not match!";
+                return;
+            }
+
+            if ($this->user->emailExists($email)) {
+                $this->errors[] = "Email already exists!";
+                return;
+            }
+
+            if ($this->user->register($name, $email, $password, $role_id, false)) {
+                $this->errors[] = "Registration successful!";
+            } else {
+                $this->errors[] = "Failed to register user.";
+            }
+        }
+    }
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -120,19 +137,10 @@ public function register() {
     }
 
     private function getMicrosoftLoginUrl() {
-        $provider = new GenericProvider([
-            'clientId'                => $_ENV['AZURE_CLIENT_ID'],
-            'clientSecret'            => $_ENV['AZURE_CLIENT_SECRET'],
-            'redirectUri'             => $_ENV['AZURE_REDIRECT_URI'],
-            'urlAuthorize'            => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-            'urlAccessToken'          => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-            'urlResourceOwnerDetails' => 'https://graph.microsoft.com/v1.0/me',
-            'scopes'                  => $_ENV['AZURE_SCOPES']
-        ]);
-
+        $provider = $this->getProvider(); 
         return $provider->getAuthorizationUrl(['state' => $_SESSION['oauth2state']]);
     }
-    
+
     public function logout() {
         session_unset(); 
         session_destroy();

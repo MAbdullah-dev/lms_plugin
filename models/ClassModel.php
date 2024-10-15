@@ -10,33 +10,24 @@ class ClassModel {
         $this->conn = $db->getConnection();
     }
 
-    public function createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $classPrice, $startDate) {
-        $query = "INSERT INTO classes (course_id, user_id, title, description, link, capacity, price, start_date) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+   public function createClass($userId, $courseId, $classTitle, $classDescription, $classLink, $classCapacity, $classPrice, $startDate) {
+    $query = "INSERT INTO classes (course_id, user_id, title, description, link, capacity, price, start_date) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            throw new Exception("Failed to prepare statement: " . $this->conn->error);
-        }
-
-        DBHelper::bindParams($stmt, [
-            ['type' => 'i', 'value' => $courseId],
-            ['type' => 'i', 'value' => $userId],
-            ['type' => 's', 'value' => $classTitle],
-            ['type' => 's', 'value' => $classDescription],
-            ['type' => 's', 'value' => $classLink],
-            ['type' => 'i', 'value' => $classCapacity],
-            ['type' => 'd', 'value' => $classPrice],
-            ['type' => 's', 'value' => $startDate]
-        ]);
-
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            throw new Exception("Error inserting class: " . $stmt->error);
-        }
+    $stmt = $this->conn->prepare($query);
+    
+    if (!$stmt) {
+        throw new Exception("Failed to prepare statement: " . $this->conn->error);
     }
 
+    $stmt->bind_param('iisssids', $courseId, $userId, $classTitle, $classDescription, $classLink, $classCapacity, $classPrice, $startDate);
+
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        throw new Exception("Error inserting class: " . $stmt->error);
+    }
+}
     public function getClassesByCourse($courseId) {
         $query = "SELECT * FROM classes WHERE course_id = ?";
         $stmt = $this->conn->prepare($query);
